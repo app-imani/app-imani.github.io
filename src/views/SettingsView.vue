@@ -92,6 +92,16 @@
         </p>
       </div>
 
+      <!-- Keluar / Logout -->
+      <div class="mx-4">
+        <button
+          @click="handleLogout"
+          class="w-full py-3.5 rounded-2xl border-2 border-red-100 bg-red-50 text-red-500 font-semibold text-sm active:scale-95 transition-all"
+        >
+          🚪 Keluar dari Akun
+        </button>
+      </div>
+
       <!-- Save button -->
       <div class="mx-4">
         <button
@@ -130,9 +140,15 @@ import TopBar from '@/components/layout/TopBar.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
 
 import { useSettingsStore } from '@/stores/settings'
+import { useAuthStore } from '@/stores/auth'
+import { useFirebaseAuth } from '@/composables/useFirebaseAuth'
 import { useGeolocation } from '@/composables/useGeolocation'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const settingsStore = useSettingsStore()
+const authStore = useAuthStore()
+const { signOut } = useFirebaseAuth()
 const { getLocation } = useGeolocation()
 
 const geoLoading = ref(false)
@@ -195,6 +211,12 @@ function saveSettings() {
   settingsStore.notifFasting = form.notifFasting
   settingsStore.save()
   window.$toast?.('Pengaturan disimpan ✨', 'success')
+}
+
+async function handleLogout() {
+  try { await signOut() } catch (e) { /* ignore */ }
+  authStore.clearSession()
+  router.replace('/auth')
 }
 
 function exportData() {

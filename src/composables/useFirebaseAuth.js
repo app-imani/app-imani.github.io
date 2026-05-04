@@ -4,11 +4,22 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { isFirebaseConfigured } from '@/firebase'
+import { useRouter } from 'vue-router'
 
 export function useFirebaseAuth() {
   const loading = ref(false)
   const error = ref(null)
   const authStore = useAuthStore()
+  const router = useRouter()
+
+  // Helper: redirect setelah login berhasil
+  function redirectAfterLogin() {
+    if (authStore.needsOnboarding) {
+      router.replace('/onboarding')
+    } else {
+      router.replace('/')
+    }
+  }
 
   // Lazy-load Firebase fungsi agar tidak crash jika env tidak dikonfigurasi
   async function getFirebaseAuth() {
@@ -31,6 +42,7 @@ export function useFirebaseAuth() {
       const result = await signInWithPopup(auth, googleProvider)
       const token = await result.user.getIdToken()
       await authStore.initSession(result.user, token)
+      redirectAfterLogin()
     } catch (e) {
       if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
         error.value = mapFirebaseError(e.code) || e.message
@@ -54,6 +66,7 @@ export function useFirebaseAuth() {
       await updateProfile(result.user, { displayName })
       const token = await result.user.getIdToken()
       await authStore.initSession(result.user, token, displayName)
+      redirectAfterLogin()
     } catch (e) {
       error.value = mapFirebaseError(e.code) || e.message
     } finally {
@@ -73,6 +86,7 @@ export function useFirebaseAuth() {
       const result = await signInWithEmailAndPassword(auth, email, password)
       const token = await result.user.getIdToken()
       await authStore.initSession(result.user, token)
+      redirectAfterLogin()
     } catch (e) {
       error.value = mapFirebaseError(e.code) || e.message
     } finally {

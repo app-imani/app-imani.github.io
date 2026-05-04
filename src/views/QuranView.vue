@@ -9,10 +9,11 @@
       <div class="mx-4 card flex flex-col items-center py-6">
         <CircularProgress
           :percent="quranStore.progressPercent"
-          :label="progressLabel"
-          size="150"
+          :size="150"
           :stroke-width="12"
-        />
+        >
+          <span class="text-2xl font-bold text-primary-600">{{ quranStore.progressPercent }}%</span>
+        </CircularProgress>
         <p class="mt-4 text-sm font-semibold text-slate-700">Progres Khatam</p>
         <p class="text-xs text-slate-400 mt-1">{{ quranStore.currentJuz }} / 30 Juz dibaca</p>
 
@@ -38,9 +39,9 @@
             </p>
             <p class="text-xs text-slate-400 mt-0.5">Juz {{ quranStore.bookmark.juz }}</p>
           </div>
-          <RouterLink to="/quran/read" class="text-xs text-primary-600 font-semibold shrink-0">
-            Lanjut →
-          </RouterLink>
+          <button @click="showBookmarkModal = true" class="text-xs text-primary-600 font-semibold shrink-0">
+            Edit 🔖
+          </button>
         </div>
       </div>
 
@@ -76,7 +77,13 @@
             <option v-for="s in surahList" :key="s.number" :value="s">{{ s.number }}. {{ s.name }}</option>
           </select>
         </div>
-        <AudioPlayer v-if="selectedSurahForAudio" :audio-url="audioUrl" :title="selectedSurahForAudio.name" />
+        <AudioPlayer
+          v-if="selectedSurahForAudio"
+          :surah-number="selectedSurahForAudio.number"
+          :total-ayahs="selectedSurahForAudio.verses"
+          :title="selectedSurahForAudio.name"
+          :subtitle="selectedSurahForAudio.arabic"
+        />
       </div>
 
       <!-- Surah pilihan -->
@@ -165,7 +172,7 @@
         </div>
         <div>
           <label class="text-sm font-medium text-slate-700 mb-2 block">Ayat ke-</label>
-          <input v-model.number="bookmarkAyah" type="number" min="1" class="w-full input-sm" />
+          <input v-model.number="bookmarkAyah" type="number" min="1" :max="bookmarkSurah?.verses || 286" class="w-full input-sm" />
         </div>
         <button @click="saveBookmark" class="w-full py-3 rounded-2xl bg-amber-500 text-white font-semibold text-sm active:scale-95 transition-all">
           🔖 Simpan Bookmark
@@ -177,7 +184,6 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
 import dayjs from 'dayjs'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
@@ -187,21 +193,41 @@ import AudioPlayer from '@/components/quran/AudioPlayer.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
 
 import { useQuranStore } from '@/stores/quran'
-import surahListData from '@/assets/data/surah-list.json'
+import surahListRaw from '@/assets/data/surah-list.json'
 
 const quranStore = useQuranStore()
 
-const surahList = surahListData
-const featuredSurahs = surahListData.slice(0, 8)
+// Normalize surah-list.json fields to consistent shape
+const surahList = surahListRaw.map(s => ({
+  number: s.id,
+  name: s.name_latin,
+  arabic: s.name_arabic,
+  meaning: s.recommended?.notes || '',
+  verses: s.verses,
+  juz: s.juz,
+})).sort((a, b) => a.number - b.number)
+
+const featuredSurahs = surahListRaw
+  .filter(s => s.recommended?.notes)
+  .sort((a, b) => a.id - b.id)
+  .slice(0, 8)
+  .map(s => ({
+    number: s.id,
+    name: s.name_latin,
+    arabic: s.name_arabic,
+    meaning: s.recommended?.notes || '',
+    verses: s.verses,
+    juz: s.juz,
+  }))
 
 const readFrom = ref(null)
 const readTo = ref(null)
-const selectedSurahForAudio = ref(surahListData[0])
+const selectedSurahForAudio = ref(surahList[0])
 
 const showTargetModal = ref(false)
 const showBookmarkModal = ref(false)
-const targetMode = ref('pages_per_day')
-const targetValue = ref(2)
+const targetMode = ref(quranStore.goal?.type || 'pages_per_day')
+const targetValue = ref(quranStore.goal?.value || 2)
 const bookmarkSurah = ref(null)
 const bookmarkAyah = ref(1)
 
@@ -211,12 +237,6 @@ const TARGET_MODES = [
 ]
 
 const progressLabel = computed(() => `${quranStore.progressPercent}%`)
-
-const audioUrl = computed(() => {
-  if (!selectedSurahForAudio.value) return ''
-  const num = String(selectedSurahForAudio.value.number).padStart(3, '0')
-  return `https://everyayah.com/data/Abdul_Basit_Murattal_64kbps/${num}001.mp3`
-})
 
 const recentLogs = computed(() => {
   return [...(quranStore.logs || [])].sort((a, b) => b.date.localeCompare(a.date)).slice(0, 10)

@@ -2,19 +2,16 @@ import { ref } from 'vue'
 
 /**
  * useGasApi — Wrapper fetch ke Google Apps Script backend
- * Setiap request otomatis menyertakan Firebase ID Token via X-Firebase-Token header.
  *
- * Auth provider di-set dari main.js via setAuthProvider() agar tidak ada
- * circular dependency antara composable ini dan Pinia store.
+ * CORS note: GAS tidak mendukung preflight OPTIONS.
+ * Aturan "simple request" harus dipenuhi:
+ *   - GET: tidak ada custom header (token di query param)
+ *   - POST: Content-Type: text/plain (bukan application/json),
+ *           token di dalam JSON body (bukan header)
  */
 
-// Module-level auth provider — di-set oleh main.js
 let _authProvider = null
 
-/**
- * Dipanggil dari main.js setelah Pinia diinisialisasi.
- * @param {() => { token: string|null, userId: string|null }} fn
- */
 export function setAuthProvider(fn) {
   _authProvider = fn
 }
@@ -34,6 +31,7 @@ export function useGasApi() {
 
   /**
    * GET request ke GAS backend
+   * Token dikirim sebagai query param (bukan header) agar tidak memicu preflight.
    */
   async function get(action, params = {}) {
     if (!BASE_URL) {
@@ -49,15 +47,13 @@ export function useGasApi() {
       const searchParams = new URLSearchParams({
         action,
         ...(auth.userId ? { userId: auth.userId } : {}),
+        ...(auth.token ? { token: auth.token } : {}),
         ...params,
       })
 
-      const headers = { 'Content-Type': 'application/json' }
-      if (auth.token) headers['X-Firebase-Token'] = auth.token
-
+      // Tidak ada custom header → simple request → no preflight
       const response = await fetch(`${BASE_URL}?${searchParams.toString()}`, {
         method: 'GET',
-        headers,
       })
 
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`)
@@ -75,6 +71,8 @@ export function useGasApi() {
 
   /**
    * POST request ke GAS backend
+   * Content-Type: text/plain agar tidak memicu preflight OPTIONS.
+   * GAS membaca body sebagai string lalu JSON.parse di doPost.
    */
   async function post(action, data = {}) {
     if (!BASE_URL) {
@@ -87,20 +85,19 @@ export function useGasApi() {
 
     try {
       const auth = getAuthInfo()
-      const headers = { 'Content-Type': 'application/json' }
-      if (auth.token) headers['X-Firebase-Token'] = auth.token
 
+      // Token di dalam body (bukan header) → tidak perlu custom header
       const body = {
         action,
         ...(auth.userId ? { userId: auth.userId } : {}),
-        // Token juga di-include di body untuk action=initUser (sebelum header auth)
-        ...(action === 'initUser' && data.token ? { token: data.token } : {}),
+        ...(auth.token ? { token: auth.token } : {}),
         data,
       }
 
+      // Content-Type: text/plain = simple request = no preflight
       const response = await fetch(BASE_URL, {
         method: 'POST',
-        headers,
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(body),
       })
 
@@ -119,4 +116,3 @@ export function useGasApi() {
 
   return { get, post, isLoading, error }
 }
-

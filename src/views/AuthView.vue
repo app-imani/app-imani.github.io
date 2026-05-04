@@ -243,7 +243,6 @@ const forgotSuccess = ref(false)
 
 async function handleLogin() {
   await firebaseAuth.loginWithEmail(loginForm.value.email, loginForm.value.password)
-  if (authStore.isAuthenticated) navigateAfterAuth()
 }
 
 async function handleRegister() {
@@ -253,7 +252,6 @@ async function handleRegister() {
     registerForm.value.password,
     registerForm.value.name,
   )
-  if (authStore.isAuthenticated) navigateAfterAuth()
 }
 
 function handleGuestMode() {

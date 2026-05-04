@@ -41,7 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await post('initUser', {
-        token: idToken,
         displayName: displayName || firebaseUser.displayName || '',
         photoURL: firebaseUser.photoURL || '',
       })

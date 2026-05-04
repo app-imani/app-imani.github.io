@@ -5,7 +5,7 @@ import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   // Wajib untuk GitHub Pages deployment
-  base: '/imani-frontend/',
+  base: '/',
 
   plugins: [
     vue(),
@@ -21,8 +21,8 @@ export default defineConfig({
         background_color: '#f8fafc',
         display: 'standalone',
         orientation: 'portrait',
-        scope: '/imani-frontend/',
-        start_url: '/imani-frontend/',
+        scope: '/',
+        start_url: '/',
         icons: [
           { src: 'icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
           { src: 'icons/icon-512x512.png', sizes: '512x512', type: 'image/png' },
@@ -32,7 +32,7 @@ export default defineConfig({
         lang: 'id',
       },
       workbox: {
-        navigateFallback: '/imani-frontend/index.html',
+        navigateFallback: '/index.html',
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           // Cache Aladhan API - jadwal sholat (stale while revalidate)

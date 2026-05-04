@@ -36,7 +36,7 @@
             v-for="p in PRAYERS"
             :key="p.key"
             :prayer="{ ...p, time: prayerTimes[p.key], isUdzur: cycleStore.isHaidActive }"
-            :status="prayerStore.getStatus(selectedDate, p.key)"
+            :status="prayerStore.getStatus(selectedDate, p.key.toLowerCase())"
             @openStatus="openStatusModal(p)"
           />
         </div>
@@ -124,7 +124,7 @@ import { useHijriDate } from '@/composables/useHijriDate'
 const prayerStore = usePrayerStore()
 const cycleStore = useCycleStore()
 const settingsStore = useSettingsStore()
-const { getPrayerTimes } = usePrayerTimes()
+const { fetchByCity } = usePrayerTimes()
 const { formatHijri } = useHijriDate()
 
 const today = dayjs()
@@ -140,11 +140,11 @@ const displayDate = computed(() => {
 const hijriStr = computed(() => formatHijri(dayjs(selectedDate.value)))
 
 const PRAYERS = [
-  { key: 'fajr', name: 'Subuh' },
-  { key: 'dhuhr', name: 'Dzuhur' },
-  { key: 'asr', name: 'Ashar' },
-  { key: 'maghrib', name: 'Maghrib' },
-  { key: 'isha', name: 'Isya' },
+  { key: 'Fajr',    name: 'Subuh' },
+  { key: 'Dhuhr',   name: 'Dzuhur' },
+  { key: 'Asr',     name: 'Ashar' },
+  { key: 'Maghrib', name: 'Maghrib' },
+  { key: 'Isha',    name: 'Isya' },
 ]
 
 const PRAYER_STATUSES = [
@@ -167,7 +167,7 @@ function openStatusModal(prayer) {
 }
 
 function setPrayerStatus(status) {
-  prayerStore.setStatus(selectedPrayer.value.key, status, selectedDate.value)
+  prayerStore.setStatus(selectedPrayer.value.key.toLowerCase(), status, selectedDate.value)
   showStatusModal.value = false
   if (status !== 'skip') window.$toast?.('Alhamdulillah 🤲', 'success')
 }
@@ -175,11 +175,11 @@ function setPrayerStatus(status) {
 async function loadPrayerTimes() {
   prayerTimesLoading.value = true
   try {
-    const result = await getPrayerTimes({
-      city: settingsStore.city || 'Jakarta',
-      country: settingsStore.country || 'Indonesia',
-      date: selectedDate.value,
-    })
+    // fetchByCity hanya fetch hari ini — untuk date berbeda pakai fetchByCoords
+    // Sederhananya: selalu fetch ulang jika date berubah
+    const city    = settingsStore.city    || 'Jakarta'
+    const country = settingsStore.country || 'Indonesia'
+    const result  = await fetchByCity(city, country, selectedDate.value)
     prayerTimes.value = result
   } catch (e) {
     prayerTimes.value = null
@@ -193,7 +193,7 @@ const weekSummary = computed(() => {
     const d = today.subtract(6 - i, 'day')
     const dateStr = d.format('YYYY-MM-DD')
     const count = PRAYERS.filter(p => {
-      const s = prayerStore.getStatus(dateStr, p.key)
+      const s = prayerStore.getStatus(dateStr, p.key.toLowerCase())
       return s && s !== 'skip'
     }).length
     return { date: dateStr, label: d.format('dd'), count, complete: count === 5 }

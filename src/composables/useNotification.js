@@ -29,8 +29,8 @@ export function useNotification() {
     if (!isSupported || permission.value !== 'granted') return null
 
     const defaultOptions = {
-      icon: '/imani-frontend/icons/icon-192x192.png',
-      badge: '/imani-frontend/icons/icon-192x192.png',
+      icon: '/icons/icon-192x192.png',
+      badge: '/icons/icon-192x192.png',
       lang: 'id',
       requireInteraction: false,
       ...options,

@@ -52,22 +52,23 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, h } from 'vue'
 import { Building2, AlertCircle } from 'lucide-vue-next'
 import { usePrayerTimes } from '@/composables/usePrayerTimes'
 import { useCycleStore } from '@/stores/cycle'
 import { useSettingsStore } from '@/stores/settings'
 import dayjs from 'dayjs'
 
-// Sub-komponen TimeUnit
+// Sub-komponen TimeUnit — render function (kompatibel dengan runtime-only build)
 const TimeUnit = {
   props: ['value', 'label'],
-  template: `
-    <div class="flex flex-col items-center">
-      <span class="text-2xl font-bold leading-none tabular-nums text-slate-800">{{ String(value).padStart(2, '0') }}</span>
-      <span class="text-[9px] text-slate-400 uppercase tracking-wide">{{ label }}</span>
-    </div>
-  `,
+  setup(props) {
+    return () => h('div', { class: 'flex flex-col items-center' }, [
+      h('span', { class: 'text-2xl font-bold leading-none tabular-nums text-slate-800' },
+        String(props.value).padStart(2, '0')),
+      h('span', { class: 'text-[9px] text-slate-400 uppercase tracking-wide' }, props.label),
+    ])
+  },
 }
 
 const cycleStore = useCycleStore()

@@ -85,9 +85,9 @@ export function usePrayerTimes() {
    * @param {string} city
    * @param {string} country
    */
-  async function fetchByCity(city, country = 'Indonesia') {
-    const today = new Date().toISOString().split('T')[0]
-    const cacheKey = `${CACHE_KEY_PREFIX}${today}_${city.toLowerCase()}`
+  async function fetchByCity(city, country = 'Indonesia', date = null) {
+    const targetDate = date || new Date().toISOString().split('T')[0]
+    const cacheKey = `${CACHE_KEY_PREFIX}${targetDate}_${city.toLowerCase()}`
 
     const cached = lsGet(cacheKey)
     if (cached) {
@@ -99,7 +99,8 @@ export function usePrayerTimes() {
     error.value = null
 
     try {
-      const url = `https://api.aladhan.com/v1/timingsByCity?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=20`
+      const [year, month, day] = targetDate.split('-')
+      const url = `https://api.aladhan.com/v1/timingsByCity/${day}-${month}-${year}?city=${encodeURIComponent(city)}&country=${encodeURIComponent(country)}&method=20`
 
       const response = await fetch(url)
       if (!response.ok) throw new Error(`Aladhan API error: ${response.status}`)
@@ -115,7 +116,7 @@ export function usePrayerTimes() {
         Asr: timings.Asr,
         Maghrib: timings.Maghrib,
         Isha: timings.Isha,
-        date: today,
+        date: targetDate,
         meta: json.data.meta,
       }
 
