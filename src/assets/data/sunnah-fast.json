@@ -1,0 +1,59 @@
+[
+  {
+    "id": "senin_kamis",
+    "name": "Puasa Senin-Kamis",
+    "days_of_week": [1, 4],
+    "hijri_dates": null,
+    "description": "Hari-hari tersebut adalah hari di mana amal-amal diperlihatkan kepada Allah, maka aku menyukai amalku diperlihatkan ketika aku sedang berpuasa.",
+    "source": "HR. Muslim no. 1162",
+    "reward": "Amalan diperlihatkan kepada Allah dalam keadaan berpuasa"
+  },
+  {
+    "id": "ayyamul_bidh",
+    "name": "Ayyamul Bidh (Hari-hari Putih)",
+    "days_of_week": null,
+    "hijri_dates": [13, 14, 15],
+    "description": "Rasulullah ﷺ memerintahkan untuk berpuasa tiga hari setiap bulan yaitu tanggal 13, 14, dan 15 Hijriah. Disebut Ayyamul Bidh karena malam-malamnya putih karena cahaya bulan purnama.",
+    "source": "HR. Abu Dawud no. 2449",
+    "reward": "Seperti puasa sepanjang tahun"
+  },
+  {
+    "id": "daud",
+    "name": "Puasa Daud (Sehari Puasa Sehari Tidak)",
+    "days_of_week": null,
+    "hijri_dates": null,
+    "description": "Puasa yang paling dicintai Allah adalah puasa Nabi Daud, yaitu sehari puasa dan sehari tidak. Dan sholat yang paling dicintai Allah adalah sholat Nabi Daud.",
+    "source": "HR. Bukhari no. 1131 & Muslim no. 1159",
+    "reward": "Puasa yang paling dicintai Allah"
+  },
+  {
+    "id": "arafah",
+    "name": "Puasa Arafah (9 Dzulhijjah)",
+    "days_of_week": null,
+    "hijri_dates": null,
+    "hijri_fixed": { "month": 12, "day": 9 },
+    "description": "Puasa pada hari Arafah menghapus dosa-dosa setahun yang telah lalu dan setahun yang akan datang. Ini khusus bagi yang tidak sedang berhaji.",
+    "source": "HR. Muslim no. 1162",
+    "reward": "Menghapus dosa 2 tahun (tahun lalu dan tahun akan datang)"
+  },
+  {
+    "id": "asyura",
+    "name": "Puasa Asyura (10 Muharram)",
+    "days_of_week": null,
+    "hijri_dates": null,
+    "hijri_fixed": { "month": 1, "day": 10 },
+    "description": "Rasulullah ﷺ lebih bersemangat berpuasa pada hari Asyura daripada hari-hari lainnya. Dianjurkan untuk juga berpuasa pada tanggal 9 Muharram (Tasu'a) sebagai pembeda dari Yahudi.",
+    "source": "HR. Bukhari no. 2004 & Muslim no. 1130",
+    "reward": "Menghapus dosa setahun yang lalu"
+  },
+  {
+    "id": "syawal",
+    "name": "Puasa 6 Hari Syawal",
+    "days_of_week": null,
+    "hijri_dates": null,
+    "hijri_fixed": { "month": 10, "start_day": 2, "count": 6 },
+    "description": "Barangsiapa yang berpuasa Ramadhan kemudian diikuti dengan enam hari pada bulan Syawal, maka ia seperti berpuasa sepanjang tahun.",
+    "source": "HR. Muslim no. 1164",
+    "reward": "Seperti puasa sepanjang tahun penuh"
+  }
+]

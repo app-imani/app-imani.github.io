@@ -1,0 +1,112 @@
+[
+  {
+    "id": "dzikir_pagi_001",
+    "category": "pagi",
+    "title": "Ayat Kursi",
+    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ ۚ لَا تَأْخُذُهُ سِنَةٌ وَلَا نَوْمٌ ۚ لَهُ مَا فِي السَّمَاوَاتِ وَمَا فِي الْأَرْضِ",
+    "latin": "Allahu la ilaha illa huwal hayyul qayyum, la ta'khudzuhu sinatun wa la nawm, lahu ma fis samawati wa ma fil ardh",
+    "translation": "Allah, tidak ada tuhan selain Dia. Yang Maha Hidup, yang terus-menerus mengurus (makhluk-Nya), tidak mengantuk dan tidak tidur. Milik-Nya apa yang ada di langit dan apa yang ada di bumi.",
+    "count": 1,
+    "source": "QS. Al-Baqarah: 255",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_pagi_002",
+    "category": "pagi",
+    "title": "Doa Pagi (Ashhbana)",
+    "arabic": "أَصْبَحْنَا وَأَصْبَحَ الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+    "latin": "Ashbahna wa ashbahal mulku lillah, walhamdulillah, la ilaha illallahu wahdahu la syarikalah",
+    "translation": "Kami berpagi hari dan berpagi hari pula kerajaan milik Allah, segala puji bagi Allah, tiada tuhan selain Allah, tiada sekutu bagi-Nya.",
+    "count": 1,
+    "source": "HR. Muslim",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_pagi_003",
+    "category": "pagi",
+    "title": "Sayyidul Istighfar",
+    "arabic": "اللَّهُمَّ أَنْتَ رَبِّي لَا إِلَهَ إِلَّا أَنْتَ، خَلَقْتَنِي وَأَنَا عَبْدُكَ، وَأَنَا عَلَى عَهْدِكَ وَوَعْدِكَ مَا اسْتَطَعْتُ",
+    "latin": "Allahumma anta rabbi la ilaha illa anta, khalaqtani wa ana abduka, wa ana ala ahdika wa wa'dika mastatha'tu",
+    "translation": "Ya Allah, Engkau adalah Tuhanku, tidak ada tuhan selain Engkau. Engkau telah menciptakanku dan aku adalah hamba-Mu.",
+    "count": 1,
+    "source": "HR. Bukhari",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_pagi_004",
+    "category": "pagi",
+    "title": "Tasbih, Tahmid, Tahlil, Takbir",
+    "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+    "latin": "Subhanallahi wa bihamdih",
+    "translation": "Maha Suci Allah dan segala puji bagi-Nya.",
+    "count": 100,
+    "source": "HR. Bukhari & Muslim",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_pagi_005",
+    "category": "pagi",
+    "title": "Doa Perlindungan Pagi",
+    "arabic": "اللَّهُمَّ بِكَ أَصْبَحْنَا، وَبِكَ أَمْسَيْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ وَإِلَيْكَ النُّشُورُ",
+    "latin": "Allahumma bika ashbahna, wa bika amsayna, wa bika nahya, wa bika namutu wa ilaykan nusyur",
+    "translation": "Ya Allah, dengan-Mu kami berpagi hari, dengan-Mu kami bersore hari, dengan-Mu kami hidup, dan dengan-Mu kami mati, dan kepada-Mu (kami kembali) untuk dibangkitkan.",
+    "count": 1,
+    "source": "HR. Tirmidzi",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_petang_001",
+    "category": "petang",
+    "title": "Doa Sore (Amsayna)",
+    "arabic": "أَمْسَيْنَا وَأَمْسَى الْمُلْكُ لِلَّهِ، وَالْحَمْدُ لِلَّهِ، لَا إِلَهَ إِلَّا اللَّهُ وَحْدَهُ لَا شَرِيكَ لَهُ",
+    "latin": "Amsayna wa amsal mulku lillah, walhamdulillah, la ilaha illallahu wahdahu la syarikalah",
+    "translation": "Kami bersore hari dan bersore hari pula kerajaan milik Allah, segala puji bagi Allah.",
+    "count": 1,
+    "source": "HR. Muslim",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_petang_002",
+    "category": "petang",
+    "title": "Ayat Kursi (Petang)",
+    "arabic": "اللَّهُ لَا إِلَٰهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ",
+    "latin": "Allahu la ilaha illa huwal hayyul qayyum",
+    "translation": "Allah, tidak ada tuhan selain Dia. Yang Maha Hidup, yang terus-menerus mengurus makhluk-Nya.",
+    "count": 1,
+    "source": "QS. Al-Baqarah: 255",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_petang_003",
+    "category": "petang",
+    "title": "Istighfar Petang",
+    "arabic": "أَسْتَغْفِرُ اللَّهَ الْعَظِيمَ الَّذِي لَا إِلَهَ إِلَّا هُوَ الْحَيُّ الْقَيُّومُ وَأَتُوبُ إِلَيْهِ",
+    "latin": "Astaghfirullaha al-'azhim alladzi la ilaha illa huwal hayyul qayyumu wa atubu ilaih",
+    "translation": "Aku memohon ampun kepada Allah Yang Maha Agung, yang tidak ada tuhan selain Dia, Yang Maha Hidup lagi terus-menerus mengurus makhluk-Nya, dan aku bertobat kepada-Nya.",
+    "count": 3,
+    "source": "HR. Tirmidzi",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_petang_004",
+    "category": "petang",
+    "title": "Doa Perlindungan Malam",
+    "arabic": "اللَّهُمَّ بِكَ أَمْسَيْنَا، وَبِكَ أَصْبَحْنَا، وَبِكَ نَحْيَا، وَبِكَ نَمُوتُ، وَإِلَيْكَ الْمَصِيرُ",
+    "latin": "Allahumma bika amsayna wa bika ashbahna wa bika nahya wa bika namutu wa ilaykal mashir",
+    "translation": "Ya Allah, dengan-Mu kami bersore hari, dengan-Mu kami berpagi hari, dengan-Mu kami hidup, dan dengan-Mu kami mati, dan kepada-Mu tempat kembali.",
+    "count": 1,
+    "source": "HR. Tirmidzi",
+    "audio_url": null
+  },
+  {
+    "id": "dzikir_petang_005",
+    "category": "petang",
+    "title": "Tasbih Petang",
+    "arabic": "سُبْحَانَ اللَّهِ وَبِحَمْدِهِ",
+    "latin": "Subhanallahi wa bihamdih",
+    "translation": "Maha Suci Allah dan segala puji bagi-Nya.",
+    "count": 100,
+    "source": "HR. Bukhari & Muslim",
+    "audio_url": null
+  }
+]

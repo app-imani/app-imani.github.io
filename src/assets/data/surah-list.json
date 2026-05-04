@@ -1,0 +1,17 @@
+[
+  { "id": 1, "name_arabic": "الفاتحة", "name_latin": "Al-Fatihah", "verses": 7, "juz": 1, "recommended": { "time": ["any"], "day": ["any"], "notes": "Setiap rakaat sholat" } },
+  { "id": 2, "name_arabic": "البقرة", "name_latin": "Al-Baqarah", "verses": 286, "juz": 1, "recommended": { "time": ["any"], "day": ["any"], "notes": "Surah terpanjang, dibaca untuk perlindungan rumah" } },
+  { "id": 3, "name_arabic": "آل عمران", "name_latin": "Ali Imran", "verses": 200, "juz": 3, "recommended": { "time": ["any"], "day": ["any"], "notes": null } },
+  { "id": 4, "name_arabic": "النساء", "name_latin": "An-Nisa", "verses": 176, "juz": 4, "recommended": { "time": ["any"], "day": ["any"], "notes": null } },
+  { "id": 5, "name_arabic": "المائدة", "name_latin": "Al-Maidah", "verses": 120, "juz": 6, "recommended": { "time": ["any"], "day": ["any"], "notes": null } },
+  { "id": 36, "name_arabic": "يس", "name_latin": "Yasin", "verses": 83, "juz": 22, "recommended": { "time": ["morning"], "day": ["any"], "notes": "Jantung Al-Qur'an, dianjurkan dibaca pagi hari" } },
+  { "id": 18, "name_arabic": "الكهف", "name_latin": "Al-Kahfi", "verses": 110, "juz": 15, "recommended": { "time": ["any"], "day": ["friday"], "notes": "Dianjurkan hari/malam Jumat, cahaya antara dua Jumat" } },
+  { "id": 56, "name_arabic": "الواقعة", "name_latin": "Al-Waqi'ah", "verses": 96, "juz": 27, "recommended": { "time": ["morning", "evening"], "day": ["any"], "notes": "Dianjurkan setiap malam, pelindung dari kefakiran" } },
+  { "id": 67, "name_arabic": "الملك", "name_latin": "Al-Mulk", "verses": 30, "juz": 29, "recommended": { "time": ["night"], "day": ["any"], "notes": "Dianjurkan setiap malam sebelum tidur, pencegah azab kubur" } },
+  { "id": 55, "name_arabic": "الرحمن", "name_latin": "Ar-Rahman", "verses": 78, "juz": 27, "recommended": { "time": ["any"], "day": ["any"], "notes": "Penghias Al-Qur'an" } },
+  { "id": 112, "name_arabic": "الإخلاص", "name_latin": "Al-Ikhlas", "verses": 4, "juz": 30, "recommended": { "time": ["any"], "day": ["any"], "notes": "Senilai sepertiga Al-Qur'an, dibaca 3x setiap pagi/petang" } },
+  { "id": 113, "name_arabic": "الفلق", "name_latin": "Al-Falaq", "verses": 5, "juz": 30, "recommended": { "time": ["morning", "evening"], "day": ["any"], "notes": "Perlindungan dari kejahatan, dibaca 3x setiap pagi/petang" } },
+  { "id": 114, "name_arabic": "الناس", "name_latin": "An-Nas", "verses": 6, "juz": 30, "recommended": { "time": ["morning", "evening"], "day": ["any"], "notes": "Perlindungan dari bisikan setan, dibaca 3x setiap pagi/petang" } },
+  { "id": 87, "name_arabic": "الأعلى", "name_latin": "Al-A'la", "verses": 19, "juz": 30, "recommended": { "time": ["any"], "day": ["friday", "saturday"], "notes": "Dianjurkan dibaca pada sholat Jumat dan sholat Id" } },
+  { "id": 32, "name_arabic": "السجدة", "name_latin": "As-Sajdah", "verses": 30, "juz": 21, "recommended": { "time": ["morning"], "day": ["friday"], "notes": "Dianjurkan Nabi dibaca setiap Jumat pagi bersama surah Al-Insan" } }
+]
