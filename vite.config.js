@@ -32,7 +32,7 @@ export default defineConfig({
         lang: 'id',
       },
       workbox: {
-        navigateFallback: '/index.html',
+        navigateFallback: null,
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         runtimeCaching: [
           // Cache Aladhan API - jadwal sholat (stale while revalidate)
