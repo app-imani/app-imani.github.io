@@ -1,7 +1,13 @@
 <template>
   <PageWrapper>
     <template #topbar>
-      <TopBar title="Siklus" subtitle="Catatan & Prediksi" />
+      <TopBar title="Siklus" subtitle="Catatan & Prediksi">
+        <template #actions>
+          <RouterLink to="/settings" class="p-2 rounded-xl active:bg-slate-100 transition-colors" aria-label="Pengaturan">
+            <Settings :size="20" class="text-slate-400" />
+          </RouterLink>
+        </template>
+      </TopBar>
     </template>
 
     <div class="pb-6 space-y-4">
@@ -172,6 +178,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
+import { RouterLink } from 'vue-router'
+import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'
@@ -237,10 +245,18 @@ function confirmSelesaiHaid() {
 }
 
 function selesaiHaid() {
-  cycleStore.selesaiHaid(selesaiDate.value)
+  const result = cycleStore.selesaiHaid(selesaiDate.value)
+  if (!result?.success) {
+    window.$toast?.(result?.message || 'Belum bisa menyelesaikan mode haid.', 'warning')
+    return
+  }
+
   showSelesaiModal.value = false
+  const rewardSubtext = result.qadhaAdded > 0
+    ? `${result.qadhaAdded} hari qadha Ramadhan tercatat otomatis.`
+    : 'Semoga Allah menjaga kesehatan dan ibadahmu.'
   window.$toast?.('Alhamdulillah, haid selesai 💕', 'success')
-  window.$reward?.()
+  window.$reward?.('Masya Allah! 🎊', rewardSubtext)
 }
 
 function saveDailyLog() {

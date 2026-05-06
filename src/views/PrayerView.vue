@@ -1,7 +1,13 @@
 <template>
   <PageWrapper>
     <template #topbar>
-      <TopBar title="Sholat" subtitle="Jadwal & Pencatatan" />
+      <TopBar title="Sholat" subtitle="Jadwal & Pencatatan">
+        <template #actions>
+          <RouterLink to="/settings" class="p-2 rounded-xl active:bg-slate-100 transition-colors" aria-label="Pengaturan">
+            <Settings :size="20" class="text-slate-400" />
+          </RouterLink>
+        </template>
+      </TopBar>
     </template>
 
     <div class="pb-6 space-y-4">
@@ -107,7 +113,8 @@
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { ChevronLeft, ChevronRight, Flame, X } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Flame, X, Settings } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
 import dayjs from 'dayjs'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'

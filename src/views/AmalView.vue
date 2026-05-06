@@ -1,7 +1,13 @@
 <template>
   <PageWrapper>
     <template #topbar>
-      <TopBar title="Amalan" subtitle="Dzikir, Doa & Ibadah" />
+      <TopBar title="Amalan" subtitle="Dzikir, Doa & Ibadah">
+        <template #actions>
+          <RouterLink to="/settings" class="p-2 rounded-xl active:bg-slate-100 transition-colors" aria-label="Pengaturan">
+            <Settings :size="20" class="text-slate-400" />
+          </RouterLink>
+        </template>
+      </TopBar>
     </template>
 
     <div class="pb-6">
@@ -131,7 +137,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { ChevronDown } from 'lucide-vue-next'
+import { ChevronDown, Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'

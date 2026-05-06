@@ -1,49 +1,87 @@
 <template>
-  <!-- Countdown card ke sholat berikutnya -->
-  <div class="card relative overflow-hidden" :class="isHaidActive ? 'border-haid-200 bg-haid-50' : 'border-primary-100 bg-gradient-to-br from-primary-50 to-white'">
-    <!-- Background pattern -->
-    <div class="absolute top-0 right-0 opacity-5 pointer-events-none">
-      <Building2 :size="120" />
+  <div
+    class="card relative overflow-hidden px-5 py-5 md:px-6"
+    :class="isHaidActive
+      ? 'border-haid-200 bg-gradient-to-br from-haid-50 via-white to-haid-50/70 shadow-[0_16px_40px_-24px_rgba(244,63,94,0.55)]'
+      : 'border-primary-100 bg-gradient-to-br from-primary-50 via-white to-emerald-50/60 shadow-[0_18px_45px_-26px_rgba(5,150,105,0.45)]'"
+  >
+    <div class="absolute inset-0 pointer-events-none">
+      <div
+        class="absolute -top-16 -right-10 h-40 w-40 rounded-full blur-3xl opacity-40"
+        :class="isHaidActive ? 'bg-haid-200/80' : 'bg-primary-200/70'"
+      />
+      <div class="absolute bottom-3 right-3 opacity-[0.06]">
+        <Building2 :size="126" />
+      </div>
     </div>
 
-    <div class="relative z-10">
-      <!-- Nama sholat berikutnya -->
-      <div class="flex items-center justify-between mb-3">
-        <div>
-          <p class="text-xs font-medium text-slate-400 uppercase tracking-wide">Waktu Sholat Berikutnya</p>
-          <h3 class="text-xl font-bold" :class="isHaidActive ? 'text-haid-600' : 'text-primary-700'">
-            {{ nextPrayer?.name || '—' }}
-          </h3>
-        </div>
-        <div class="text-right">
-          <p class="text-sm text-slate-400">{{ nextPrayer?.time || '—' }}</p>
-          <p class="text-xs text-slate-300">{{ todayDate }}</p>
-        </div>
+    <div class="relative z-10 text-center">
+      <div class="flex items-center justify-center gap-2 mb-2">
+        <span
+          class="inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.16em]"
+          :class="isHaidActive ? 'bg-haid-100 text-haid-700' : 'bg-primary-100 text-primary-700'"
+        >
+          Waktu Sholat Berikutnya
+        </span>
       </div>
 
-      <!-- Countdown timer -->
-      <div v-if="secondsLeft !== null" class="flex items-center gap-2">
-        <div class="flex gap-1.5">
-          <TimeUnit :value="hours" label="Jam" />
-          <span class="text-xl font-bold text-slate-300 self-center">:</span>
-          <TimeUnit :value="minutes" label="Mnt" />
-          <span class="text-xl font-bold text-slate-300 self-center">:</span>
-          <TimeUnit :value="secs" label="Dtk" />
+      <h3 class="text-3xl font-extrabold tracking-tight" :class="isHaidActive ? 'text-haid-700' : 'text-primary-700'">
+        {{ nextPrayer?.name || '—' }}
+      </h3>
+      <p class="mt-1 text-sm text-slate-500">
+        Pukul <span class="font-semibold text-slate-700">{{ nextPrayer?.time || '—' }}</span> · {{ todayDate }}
+      </p>
+
+      <div v-if="secondsLeft !== null" class="mt-5">
+        <div class="flex items-center justify-center gap-2 sm:gap-3">
+          <div class="time-box">
+            <span class="time-value">{{ formattedHours }}</span>
+            <span class="time-label">Jam</span>
+          </div>
+
+          <span class="time-separator">:</span>
+
+          <div class="time-box">
+            <span class="time-value">{{ formattedMinutes }}</span>
+            <span class="time-label">Menit</span>
+          </div>
+
+          <span class="time-separator">:</span>
+
+          <div class="time-box time-box-seconds">
+            <transition name="tick" mode="out-in">
+              <span :key="secs" class="time-value seconds-value">{{ formattedSeconds }}</span>
+            </transition>
+            <span class="time-label">Detik</span>
+          </div>
         </div>
-        <span class="text-xs text-slate-400 ml-1">lagi</span>
+
+        <p class="mt-3 text-sm font-medium text-slate-500">
+          <span class="font-semibold" :class="isHaidActive ? 'text-haid-600' : 'text-primary-600'">{{ nextPrayer?.name || 'Waktu sholat' }}</span>
+          akan tiba sebentar lagi
+        </p>
       </div>
 
-      <div v-else class="text-sm text-slate-400">
+      <div v-else class="mt-5 text-sm text-slate-400">
         Memuat jadwal sholat...
       </div>
 
-      <!-- Loading -->
-      <div v-if="isLoading" class="mt-2">
-        <div class="skeleton h-8 w-40 rounded-lg" />
+      <div class="mt-5 grid grid-cols-2 gap-2 text-left">
+        <div class="rounded-2xl border border-white/70 bg-white/75 backdrop-blur px-3.5 py-3 shadow-sm">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Status</p>
+          <p class="mt-1 text-sm font-bold text-slate-700">{{ isHaidActive ? 'Mode Haid Aktif' : 'Siap untuk bersiap' }}</p>
+        </div>
+        <div class="rounded-2xl border border-white/70 bg-white/75 backdrop-blur px-3.5 py-3 shadow-sm">
+          <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Hitung Mundur</p>
+          <p class="mt-1 text-sm font-bold text-slate-700 tabular-nums">{{ compactCountdown }}</p>
+        </div>
       </div>
 
-      <!-- Error / tidak ada lokasi -->
-      <div v-if="error" class="mt-2 text-xs text-rose-500 flex items-center gap-1">
+      <div v-if="isLoading" class="mt-4 flex justify-center">
+        <div class="skeleton h-9 w-44 rounded-2xl" />
+      </div>
+
+      <div v-if="error" class="mt-4 inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-3 py-1.5 text-xs text-rose-500">
         <AlertCircle :size="12" />
         {{ error }}
       </div>
@@ -52,24 +90,12 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, h } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { Building2, AlertCircle } from 'lucide-vue-next'
 import { usePrayerTimes } from '@/composables/usePrayerTimes'
 import { useCycleStore } from '@/stores/cycle'
 import { useSettingsStore } from '@/stores/settings'
 import dayjs from 'dayjs'
-
-// Sub-komponen TimeUnit — render function (kompatibel dengan runtime-only build)
-const TimeUnit = {
-  props: ['value', 'label'],
-  setup(props) {
-    return () => h('div', { class: 'flex flex-col items-center' }, [
-      h('span', { class: 'text-2xl font-bold leading-none tabular-nums text-slate-800' },
-        String(props.value).padStart(2, '0')),
-      h('span', { class: 'text-[9px] text-slate-400 uppercase tracking-wide' }, props.label),
-    ])
-  },
-}
 
 const cycleStore = useCycleStore()
 const settingsStore = useSettingsStore()
@@ -84,6 +110,10 @@ const secondsLeft = ref(null)
 const hours = computed(() => Math.floor((secondsLeft.value || 0) / 3600))
 const minutes = computed(() => Math.floor(((secondsLeft.value || 0) % 3600) / 60))
 const secs = computed(() => (secondsLeft.value || 0) % 60)
+const formattedHours = computed(() => String(hours.value).padStart(2, '0'))
+const formattedMinutes = computed(() => String(minutes.value).padStart(2, '0'))
+const formattedSeconds = computed(() => String(secs.value).padStart(2, '0'))
+const compactCountdown = computed(() => `${formattedHours.value}:${formattedMinutes.value}:${formattedSeconds.value}`)
 
 let countdownInterval = null
 
@@ -117,3 +147,44 @@ function updateCountdown() {
   secondsLeft.value = next?.secondsLeft || null
 }
 </script>
+
+<style scoped>
+.time-box {
+  @apply min-w-[78px] rounded-[1.4rem] border border-white/80 bg-white/85 px-3 py-3 shadow-sm backdrop-blur;
+}
+
+.time-box-seconds {
+  @apply ring-2 ring-primary-100/80 shadow-[0_10px_24px_-16px_rgba(5,150,105,0.5)];
+}
+
+.time-value {
+  @apply block text-center text-[2rem] sm:text-[2.4rem] font-extrabold leading-none tabular-nums tracking-tight text-slate-800;
+}
+
+.seconds-value {
+  @apply text-primary-600;
+}
+
+.time-label {
+  @apply mt-1.5 block text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400;
+}
+
+.time-separator {
+  @apply text-2xl sm:text-3xl font-bold text-slate-300 self-center -mt-5;
+}
+
+.tick-enter-active,
+.tick-leave-active {
+  transition: all 180ms ease;
+}
+
+.tick-enter-from {
+  opacity: 0;
+  transform: translateY(12px) scale(0.92);
+}
+
+.tick-leave-to {
+  opacity: 0;
+  transform: translateY(-12px) scale(1.06);
+}
+</style>

@@ -51,7 +51,14 @@ function toastIcon(type) {
   return icons[type] || Info
 }
 
-function addToast({ message, title = '', type = 'info', duration = 3000 }) {
+function addToast(input, legacyType = 'info', legacyTitle = '') {
+  const payload = typeof input === 'string'
+    ? { message: input, type: legacyType, title: legacyTitle, duration: 3000 }
+    : input
+
+  const { message, title = '', type = 'info', duration = 3000 } = payload || {}
+  if (!message) return
+
   const id = ++toastIdCounter
   toasts.value.push({ id, message, title, type })
 

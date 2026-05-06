@@ -99,7 +99,13 @@ export const useCycleStore = defineStore('cycle', () => {
     const endDate = date || new Date().toISOString().split('T')[0]
     const startDate = currentHaidStart.value
 
-    if (!startDate) return { qadhaAdded: 0, isRamadhan: false }
+    if (!isHaidActive.value || !startDate) {
+      return { success: false, qadhaAdded: 0, duringRamadhan: false, durationDays: 0, message: 'Mode haid belum aktif.' }
+    }
+
+    if (endDate < startDate) {
+      return { success: false, qadhaAdded: 0, duringRamadhan: false, durationDays: 0, message: 'Tanggal selesai tidak boleh lebih awal dari tanggal mulai.' }
+    }
 
     // Hitung durasi haid
     const start = new Date(startDate)
@@ -138,10 +144,11 @@ export const useCycleStore = defineStore('cycle', () => {
     currentHaidStart.value = null
     mood.value = null
     symptoms.value = []
+    lastPeriodDate.value = startDate
 
     saveToStorage()
 
-    return { qadhaAdded, duringRamadhan, durationDays }
+    return { success: true, qadhaAdded, duringRamadhan, durationDays }
   }
 
   /**

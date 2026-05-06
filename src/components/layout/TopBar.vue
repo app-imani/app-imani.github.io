@@ -17,12 +17,15 @@
       </div>
 
       <!-- Judul halaman -->
-      <div class="flex-1 min-w-0">
-        <h1 class="text-base font-bold text-slate-800 truncate">{{ title || pageTitle }}</h1>
-        <p v-if="subtitle" class="text-xs text-slate-400 truncate leading-none mt-0.5">{{ subtitle }}</p>
+      <div class="flex-1 min-w-0 text-center">
+        <slot name="title">
+          <h1 class="text-base font-bold text-slate-800 truncate">{{ title || pageTitle }}</h1>
+          <p v-if="subtitle" class="text-xs text-slate-400 truncate leading-none mt-0.5">{{ subtitle }}</p>
+        </slot>
       </div>
 
-      <!-- Slot untuk aksi kanan (opsional) -->
+      <!-- Slot untuk aksi kanan (alias: actions atau right) -->
+      <slot name="right" />
       <slot name="actions" />
     </div>
   </header>
@@ -32,6 +35,7 @@
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ChevronLeft, Sparkles } from 'lucide-vue-next'
+import { RouterLink } from 'vue-router'
 
 const props = defineProps({
   title: { type: String, default: '' },

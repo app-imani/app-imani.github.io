@@ -18,35 +18,64 @@
       </TopBar>
     </template>
 
-    <div class="space-y-4 pb-6">
-      <!-- Mode Haid Banner -->
-      <HaidModeBanner v-if="cycleStore.isHaidActive" />
-
-      <!-- Streak + Cycle badge row -->
-      <div class="flex gap-3 px-4">
-        <StreakWidget class="flex-1" />
-        <CycleStatusBadge class="flex-1" />
-      </div>
-
-      <!-- Prayer countdown -->
-      <div class="px-4">
+    <div class="space-y-5 pb-6">
+      <!-- Prayer countdown hero -->
+      <div class="px-4 pt-2">
         <PrayerCountdownCard />
       </div>
 
-      <!-- Sholat quick checklist -->
-      <div class="mx-4 card">
-        <div class="flex items-center justify-between mb-3">
-          <h2 class="text-sm font-semibold text-slate-700">Sholat Hari Ini</h2>
-          <RouterLink to="/prayer" class="text-xs text-primary-600 font-medium">Lihat semua →</RouterLink>
+      <!-- Quick stats row -->
+      <div class="px-4 grid grid-cols-2 gap-3 items-stretch">
+        <StreakWidget class="min-w-0 h-full" />
+        <div class="h-full">
+          <CycleStatusBadge />
         </div>
-        <div class="space-y-0.5">
-          <PrayerCheckItem
-            v-for="p in prayers"
-            :key="p.key"
-            :prayer="p"
-            :status="prayerStore.getTodayStatus(p.key)"
-            @openStatus="openStatusModal(p)"
-          />
+      </div>
+
+      <!-- Mode Haid Banner -->
+      <div v-if="cycleStore.isHaidActive" class="px-4">
+        <HaidModeBanner @selesaiHaid="openSelesaiHaidModal" />
+      </div>
+
+      <!-- Sholat quick checklist -->
+      <div v-if="!cycleStore.isHaidActive" class="mx-4 card p-0 overflow-hidden">
+        <div class="px-4 pt-4 pb-3 bg-gradient-to-r from-white via-slate-50/70 to-primary-50/50 border-b border-slate-100">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <h2 class="text-sm font-semibold text-slate-800">Sholat Hari Ini</h2>
+              <p class="text-xs text-slate-400 mt-1">{{ completedPrayerCount }} dari {{ prayers.length }} waktu sudah tercatat hari ini</p>
+            </div>
+            <RouterLink to="/prayer" class="shrink-0 text-xs text-primary-600 font-semibold bg-primary-50 px-3 py-1.5 rounded-xl">
+              Lihat semua →
+            </RouterLink>
+          </div>
+
+          <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+            <div class="shrink-0 rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2">
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">Progres</p>
+              <p class="text-sm font-bold text-emerald-700">{{ prayerProgressPercent }}%</p>
+            </div>
+            <div class="shrink-0 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Hijriah</p>
+              <p class="text-sm font-bold text-slate-700 whitespace-nowrap">{{ hijriDateShort }}</p>
+            </div>
+            <div v-if="todayFastingType" class="shrink-0 rounded-xl bg-amber-50 border border-amber-100 px-3 py-2">
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-amber-500">Puasa Hari Ini</p>
+              <p class="text-sm font-bold text-amber-700 whitespace-nowrap">{{ todayFastingType.name }}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="px-4 py-2">
+          <div class="space-y-0.5">
+            <PrayerCheckItem
+              v-for="p in prayers"
+              :key="p.key"
+              :prayer="p"
+              :status="prayerStore.getTodayStatus(p.key)"
+              @openStatus="openStatusModal(p)"
+            />
+          </div>
         </div>
       </div>
 
@@ -91,6 +120,70 @@
         </button>
       </div>
     </ModalBase>
+
+    <ModalBase v-model="showSelesaiHaidModal" title="Konfirmasi Haid Selesai">
+      <div class="p-5 space-y-4">
+        <div>
+          <label class="text-sm font-medium text-slate-700 mb-1 block">Tanggal selesai</label>
+          <input v-model="selesaiDate" type="date" :max="todayStr" class="input-field" />
+        </div>
+
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Setelah dikonfirmasi, mode haid akan dinonaktifkan dan jadwal ibadah harian akan tampil kembali.
+        </p>
+
+        <button
+          @click="selesaiHaidFromBanner"
+          class="w-full py-3 rounded-2xl bg-primary-600 text-white font-semibold text-sm active:scale-95 transition-all"
+        >
+          ✓ Konfirmasi Selesai
+        </button>
+      </div>
+    </ModalBase>
+
+    <ModalBase v-model="showCongratsModal" title="Selamat, sayaaang! ✨">
+      <div class="relative overflow-hidden p-5 text-center">
+        <div class="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-pink-50 via-rose-50/80 to-transparent" />
+
+        <div class="relative mx-auto mb-4 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-pink-200 via-rose-100 to-amber-100 shadow-[0_16px_40px_-18px_rgba(244,114,182,0.55)] ring-4 ring-white">
+          <span class="absolute inset-0 rounded-full bg-white/25 animate-ping" />
+          <span class="relative text-[2.6rem]">🌷</span>
+        </div>
+
+        <p class="text-[11px] font-semibold uppercase tracking-[0.18em] text-rose-400">Recovery Milestone</p>
+        <h3 class="mt-2 text-xl font-bold tracking-tight text-slate-800">Alhamdulillah, fase haid telah selesai</h3>
+        <p class="mt-2 text-sm leading-relaxed text-slate-500">
+          Semoga tubuhmu kembali nyaman, hatimu tenang, dan Allah limpahkan keberkahan untuk ibadahmu hari ini.
+        </p>
+
+        <div class="mt-5 grid grid-cols-2 gap-3 text-left">
+          <div class="rounded-2xl border border-rose-100 bg-rose-50/80 px-4 py-3">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-rose-400">Durasi</p>
+            <p class="mt-1 text-base font-bold text-rose-700">{{ completedHaidSummary.durationDays }} hari</p>
+          </div>
+          <div class="rounded-2xl border border-amber-100 bg-amber-50/80 px-4 py-3">
+            <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-500">Qadha</p>
+            <p class="mt-1 text-base font-bold text-amber-700">
+              {{ completedHaidSummary.qadhaAdded > 0 ? `${completedHaidSummary.qadhaAdded} hari` : 'Tidak ada' }}
+            </p>
+          </div>
+        </div>
+
+        <div class="mt-4 rounded-2xl border border-pink-100 bg-gradient-to-r from-pink-50 via-white to-rose-50 px-4 py-3 text-left">
+          <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-pink-400">Pesan lembut</p>
+          <p class="mt-1 text-sm leading-relaxed text-slate-600">
+            Yuk lanjutkan hari dengan lembut. Checklist sholat dan rutinitas ibadah harianmu sudah siap kembali 🌸
+          </p>
+        </div>
+
+        <button
+          @click="showCongratsModal = false"
+          class="mt-5 w-full rounded-2xl bg-gradient-to-r from-rose-500 via-pink-500 to-primary-500 py-3 text-sm font-semibold text-white shadow-[0_14px_28px_-18px_rgba(236,72,153,0.75)] active:scale-95 transition-all"
+        >
+          Siap lanjut ibadah 💖
+        </button>
+      </div>
+    </ModalBase>
   </PageWrapper>
 </template>
 
@@ -124,6 +217,10 @@ const { formatHijri, isTodaySunnahFast } = useHijriDate()
 
 const todayDate = dayjs()
 const hijriDateStr = computed(() => formatHijri(todayDate))
+const hijriDateShort = computed(() => {
+  const parts = String(hijriDateStr.value || '').split(',')
+  return parts.length > 1 ? parts[1].trim() : hijriDateStr.value
+})
 
 const HOUR = todayDate.hour()
 const greeting = HOUR < 11 ? 'Selamat Pagi' : HOUR < 15 ? 'Selamat Siang' : HOUR < 18 ? 'Selamat Sore' : 'Selamat Malam'
@@ -145,6 +242,11 @@ const PRAYER_STATUSES = [
 
 const showStatusModal = ref(false)
 const selectedPrayer = ref(null)
+const todayStr = dayjs().format('YYYY-MM-DD')
+const selesaiDate = ref(todayStr)
+const showSelesaiHaidModal = ref(false)
+const showCongratsModal = ref(false)
+const completedHaidSummary = ref({ durationDays: 0, qadhaAdded: 0, duringRamadhan: false })
 
 function openStatusModal(prayer) {
   selectedPrayer.value = prayer
@@ -158,9 +260,35 @@ function setPrayerStatus(status) {
   window.$toast?.('Status sholat dicatat 🤲', 'success')
 }
 
+function openSelesaiHaidModal() {
+  selesaiDate.value = todayStr
+  showSelesaiHaidModal.value = true
+}
+
+function selesaiHaidFromBanner() {
+  const result = cycleStore.selesaiHaid(selesaiDate.value)
+  if (!result?.success) {
+    window.$toast?.(result?.message || 'Belum bisa menyelesaikan mode haid.', 'warning')
+    return
+  }
+
+  completedHaidSummary.value = {
+    durationDays: result.durationDays,
+    qadhaAdded: result.qadhaAdded,
+    duringRamadhan: result.duringRamadhan,
+  }
+
+  showSelesaiHaidModal.value = false
+  showCongratsModal.value = true
+  window.$toast?.('Alhamdulillah, haid selesai 💕', 'success')
+  window.$reward?.('Alhamdulillah! 🎉', 'Semoga Allah jaga kesehatanmu dan mudahkan ibadahmu')
+}
+
 // Fasting suggestion
 const todayFastingType = computed(() => isTodaySunnahFast())
 const fastingLogged = computed(() => fastingStore.isTodayLogged())
+const completedPrayerCount = computed(() => prayers.filter((prayer) => !!prayerStore.getTodayStatus(prayer.key)).length)
+const prayerProgressPercent = computed(() => Math.round((completedPrayerCount.value / prayers.length) * 100))
 
 function logFasting() {
   if (fastingLogged.value) return
@@ -168,3 +296,14 @@ function logFasting() {
   window.$toast?.('Puasa sunnah dicatat 🌙', 'success')
 }
 </script>
+
+<style scoped>
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+</style>

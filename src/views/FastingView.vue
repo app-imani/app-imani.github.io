@@ -1,7 +1,13 @@
 <template>
   <PageWrapper>
     <template #topbar>
-      <TopBar title="Puasa" subtitle="Wajib & Sunnah" />
+      <TopBar title="Puasa" subtitle="Wajib & Sunnah">
+        <template #actions>
+          <RouterLink to="/settings" class="p-2 rounded-xl active:bg-slate-100 transition-colors" aria-label="Pengaturan">
+            <Settings :size="20" class="text-slate-400" />
+          </RouterLink>
+        </template>
+      </TopBar>
     </template>
 
     <div class="pb-6 space-y-4">
@@ -141,6 +147,8 @@
 <script setup>
 import { ref, computed } from 'vue'
 import dayjs from 'dayjs'
+import { RouterLink } from 'vue-router'
+import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'

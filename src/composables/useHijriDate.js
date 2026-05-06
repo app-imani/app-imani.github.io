@@ -1,9 +1,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/id'
-import dayjsHijri from 'dayjs-hijri'
 
-// Register plugin Hijri
-dayjs.extend(dayjsHijri)
 dayjs.locale('id')
 
 /**
@@ -24,26 +21,47 @@ const HIJRI_MONTHS_ID = [
   'Ramadhan', 'Syawal', 'Dzulqa\'dah', 'Dzulhijjah',
 ]
 
+const HIJRI_FORMATTER = new Intl.DateTimeFormat('en-TN-u-ca-islamic', {
+  day: 'numeric',
+  month: 'numeric',
+  year: 'numeric',
+  timeZone: 'UTC',
+})
+
+function normalizeDate(date) {
+  const raw = dayjs.isDayjs(date) ? date.toDate() : new Date(date)
+  if (Number.isNaN(raw.getTime())) return new Date()
+  return new Date(Date.UTC(raw.getFullYear(), raw.getMonth(), raw.getDate(), 12, 0, 0))
+}
+
+function extractHijriParts(date) {
+  const parts = HIJRI_FORMATTER.formatToParts(normalizeDate(date))
+  const getPart = (type) => Number(parts.find((part) => part.type === type)?.value || 0)
+
+  return {
+    day: getPart('day'),
+    month: getPart('month'),
+    year: getPart('year'),
+  }
+}
+
 /**
  * useHijriDate — Konversi dan format tanggal Hijriah
  */
 export function useHijriDate() {
-  /**
-   * Konversi tanggal Masehi ke Hijriah
-   * @param {Date|string} date - tanggal Masehi
-   * @returns {{ year: number, month: number, day: number, monthNameAr: string, monthNameId: string, formatted: string }}
-   */
   function toHijri(date = new Date()) {
-    const d = dayjs(date).iH()
-    const month = d.iMonth() // 0-indexed
+    const { day, month, year } = extractHijriParts(date)
+    const monthIndex = Math.max(0, Math.min(11, month - 1))
+
     return {
-      year: d.iYear(),
-      month: month + 1,
-      day: d.iDate(),
-      monthNameAr: HIJRI_MONTHS_AR[month],
-      monthNameId: HIJRI_MONTHS_ID[month],
-      formatted: `${d.iDate()} ${HIJRI_MONTHS_ID[month]} ${d.iYear()} H`,
-      formattedAr: `${d.iDate()} ${HIJRI_MONTHS_AR[month]} ${d.iYear()} هـ`,
+      year,
+      month,
+      day,
+      monthName: HIJRI_MONTHS_ID[monthIndex],
+      monthNameAr: HIJRI_MONTHS_AR[monthIndex],
+      monthNameId: HIJRI_MONTHS_ID[monthIndex],
+      formatted: `${day} ${HIJRI_MONTHS_ID[monthIndex]} ${year} H`,
+      formattedAr: `${day} ${HIJRI_MONTHS_AR[monthIndex]} ${year} هـ`,
     }
   }
 
@@ -71,22 +89,22 @@ export function useHijriDate() {
    */
   function getAyyamulBidhDates() {
     const today = dayjs()
-    const hijriToday = dayjs(today.toDate()).iH()
-    const currentHijriYear = hijriToday.iYear()
-    const currentHijriMonth = hijriToday.iMonth() + 1
-
-    // Konversi tanggal 13, 14, 15 bulan hijri ini ke Masehi
+    const currentHijri = toHijri(today)
     const dates = []
-    for (const day of [13, 14, 15]) {
-      try {
-        // Buat tanggal hijri menggunakan iH()
-        const hijriDate = dayjs(`${currentHijriYear}-${currentHijriMonth}-${day}`, 'iYYYY-iM-iD')
-        dates.push(hijriDate.format('YYYY-MM-DD'))
-      } catch (e) {
-        console.warn('[useHijriDate] Error konversi Ayyamul Bidh:', e)
+
+    for (let offset = -40; offset <= 40; offset++) {
+      const currentDate = today.add(offset, 'day')
+      const hijri = toHijri(currentDate)
+      if (
+        hijri.year === currentHijri.year &&
+        hijri.month === currentHijri.month &&
+        [13, 14, 15].includes(hijri.day)
+      ) {
+        dates.push(currentDate.format('YYYY-MM-DD'))
       }
     }
-    return dates
+
+    return [...new Set(dates)].sort()
   }
 
   /**
@@ -95,15 +113,17 @@ export function useHijriDate() {
    */
   function getArafahDate() {
     const today = dayjs()
-    const hijriToday = dayjs(today.toDate()).iH()
-    const currentHijriYear = hijriToday.iYear()
+    const currentHijriYear = toHijri(today).year
 
-    try {
-      const arafahDate = dayjs(`${currentHijriYear}-12-9`, 'iYYYY-iM-iD')
-      return arafahDate.format('YYYY-MM-DD')
-    } catch (e) {
-      return null
+    for (let offset = -380; offset <= 380; offset++) {
+      const currentDate = today.add(offset, 'day')
+      const hijri = toHijri(currentDate)
+      if (hijri.year === currentHijriYear && hijri.month === 12 && hijri.day === 9) {
+        return currentDate.format('YYYY-MM-DD')
+      }
     }
+
+    return null
   }
 
   /**
@@ -132,10 +152,9 @@ export function useHijriDate() {
 
   function formatHijri(date = new Date()) {
     try {
-      const d = dayjs(date).toDate ? dayjs(date) : dayjs(date)
-      const hijri = toHijri(d.toDate ? d.toDate() : date)
+      const hijri = toHijri(date)
       return `${hijri.day} ${hijri.monthName} ${hijri.year} H`
-    } catch (e) {
+    } catch {
       return ''
     }
   }
@@ -156,7 +175,7 @@ export function useHijriDate() {
       if ([13, 14, 15].includes(hijri.day)) {
         return { key: 'ayyamul_bidh', name: "Ayyamul Bidh", desc: `${hijri.day} ${hijri.monthName}` }
       }
-    } catch (e) { /* */ }
+    } catch { /* */ }
     return null
   }
 
