@@ -31,7 +31,7 @@
       </div>
 
       <!-- Quick stats row -->
-      <div class="px-4 grid grid-cols-2 gap-3 items-stretch">
+      <div class="px-4 grid grid-cols-2 gap-3 sm:grid-cols-2 items-stretch">
         <StreakWidget class="min-w-0 h-full" />
         <div class="h-full">
           <CycleStatusBadge />
@@ -44,49 +44,7 @@
       </div>
 
       <!-- Sholat quick checklist -->
-      <div v-if="!cycleStore.isHaidActive" class="mx-4 card p-0 overflow-hidden">
-        <div class="px-4 pt-4 pb-3 bg-gradient-to-r from-white via-slate-50/70 to-primary-50/50 border-b border-slate-100">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <h2 class="text-sm font-semibold text-slate-800">Sholat Hari Ini</h2>
-              <p class="text-xs text-slate-400 mt-1">{{ completedPrayerCount }} dari {{ prayers.length }} waktu sudah tercatat hari ini</p>
-            </div>
-            <RouterLink to="/prayer" class="shrink-0 text-xs text-primary-600 font-semibold bg-primary-50 px-3 py-1.5 rounded-xl">
-              Lihat semua →
-            </RouterLink>
-          </div>
-
-          <div class="mt-3 flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
-            <div class="shrink-0 rounded-xl bg-emerald-50 border border-emerald-100 px-3 py-2">
-              <p class="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">Progres</p>
-              <p class="text-sm font-bold text-emerald-700">{{ prayerProgressPercent }}%</p>
-            </div>
-            <RouterLink
-              to="/hijri-calendar"
-              class="shrink-0 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100 px-3 py-2 flex flex-col active:scale-95 transition-all"
-            >
-              <p class="text-[10px] font-semibold uppercase tracking-wide text-rose-400">🌙 Hijriah</p>
-              <p class="text-sm font-bold text-rose-700 whitespace-nowrap">{{ hijriDateShort }}</p>
-            </RouterLink>
-            <div v-if="todayFastingType" class="shrink-0 rounded-xl bg-amber-50 border border-amber-100 px-3 py-2">
-              <p class="text-[10px] font-semibold uppercase tracking-wide text-amber-500">Puasa Hari Ini</p>
-              <p class="text-sm font-bold text-amber-700 whitespace-nowrap">{{ todayFastingType.name }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="px-4 py-2">
-          <div class="space-y-0.5">
-            <PrayerCheckItem
-              v-for="p in prayers"
-              :key="p.key"
-              :prayer="p"
-              :status="prayerStore.getTodayStatus(p.key)"
-              @openStatus="openStatusModal(p)"
-            />
-          </div>
-        </div>
-      </div>
+      <PrayerChecklist />
 
       <!-- Dynamic amal card -->
       <div class="px-4">
@@ -111,24 +69,6 @@
         </div>
       </div>
     </div>
-
-    <!-- Prayer status modal -->
-    <ModalBase v-model="showStatusModal" :title="`Status Sholat ${selectedPrayer?.name || ''}`">
-      <div class="grid grid-cols-2 gap-2 p-4">
-        <button
-          v-for="s in PRAYER_STATUSES"
-          :key="s.value"
-          @click="setPrayerStatus(s.value)"
-          class="flex flex-col items-center gap-1 py-4 rounded-2xl border-2 transition-all active:scale-95"
-          :class="prayerStore.getTodayStatus(selectedPrayer?.key) === s.value
-            ? 'border-primary-500 bg-primary-50'
-            : 'border-slate-100 bg-white'"
-        >
-          <span class="text-2xl">{{ s.emoji }}</span>
-          <span class="text-xs font-medium text-slate-700">{{ s.label }}</span>
-        </button>
-      </div>
-    </ModalBase>
 
     <ModalBase v-model="showSelesaiHaidModal" title="Konfirmasi Haid Selesai">
       <div class="p-5 space-y-4">
@@ -209,17 +149,15 @@ import StreakWidget from '@/components/dashboard/StreakWidget.vue'
 import CycleStatusBadge from '@/components/dashboard/CycleStatusBadge.vue'
 import PrayerCountdownCard from '@/components/dashboard/PrayerCountdownCard.vue'
 import DynamicAmalCard from '@/components/dashboard/DynamicAmalCard.vue'
-import PrayerCheckItem from '@/components/prayer/PrayerCheckItem.vue'
+import PrayerChecklist from '@/components/dashboard/PrayerChecklist.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
 
 import { useSettingsStore } from '@/stores/settings'
-import { usePrayerStore } from '@/stores/prayer'
 import { useCycleStore } from '@/stores/cycle'
 import { useFastingStore } from '@/stores/fasting'
 import { useHijriDate } from '@/composables/useHijriDate'
 
 const settingsStore = useSettingsStore()
-const prayerStore = usePrayerStore()
 const cycleStore = useCycleStore()
 const fastingStore = useFastingStore()
 const { formatHijri, isTodaySunnahFast } = useHijriDate()
@@ -234,40 +172,11 @@ const hijriDateShort = computed(() => {
 const HOUR = todayDate.hour()
 const greeting = HOUR < 11 ? 'Selamat Pagi' : HOUR < 15 ? 'Selamat Siang' : HOUR < 18 ? 'Selamat Sore' : 'Selamat Malam'
 
-const prayers = [
-  { key: 'fajr', name: 'Subuh' },
-  { key: 'dhuhr', name: 'Dzuhur' },
-  { key: 'asr', name: 'Ashar' },
-  { key: 'maghrib', name: 'Maghrib' },
-  { key: 'isha', name: 'Isya' },
-]
-
-const PRAYER_STATUSES = [
-  { value: 'tepat_waktu', label: 'Tepat Waktu', emoji: '⏰' },
-  { value: 'terlambat', label: 'Terlambat', emoji: '🕰️' },
-  { value: 'berjamaah', label: 'Berjamaah', emoji: '🕌' },
-  { value: 'munfarid', label: 'Munfarid', emoji: '🤲' },
-]
-
-const showStatusModal = ref(false)
-const selectedPrayer = ref(null)
 const todayStr = dayjs().format('YYYY-MM-DD')
 const selesaiDate = ref(todayStr)
 const showSelesaiHaidModal = ref(false)
 const showCongratsModal = ref(false)
 const completedHaidSummary = ref({ durationDays: 0, qadhaAdded: 0, duringRamadhan: false })
-
-function openStatusModal(prayer) {
-  selectedPrayer.value = prayer
-  showStatusModal.value = true
-}
-
-function setPrayerStatus(status) {
-  if (!selectedPrayer.value) return
-  prayerStore.setStatus(selectedPrayer.value.key, status)
-  showStatusModal.value = false
-  window.$toast?.('Status sholat dicatat 🤲', 'success')
-}
 
 function openSelesaiHaidModal() {
   selesaiDate.value = todayStr
@@ -296,9 +205,6 @@ function selesaiHaidFromBanner() {
 // Fasting suggestion
 const todayFastingType = computed(() => isTodaySunnahFast())
 const fastingLogged = computed(() => fastingStore.isTodayLogged())
-const completedPrayerCount = computed(() => prayers.filter((prayer) => !!prayerStore.getTodayStatus(prayer.key)).length)
-const prayerProgressPercent = computed(() => Math.round((completedPrayerCount.value / prayers.length) * 100))
-
 function logFasting() {
   if (fastingLogged.value) return
   fastingStore.addLog({ type: 'sunnah', subType: todayFastingType.value?.key, date: dayjs().format('YYYY-MM-DD') })

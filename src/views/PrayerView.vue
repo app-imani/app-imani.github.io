@@ -10,117 +10,160 @@
       </TopBar>
     </template>
 
-    <div class="pb-6 space-y-4">
-      <!-- Date selector -->
-      <div class="flex items-center justify-between px-4 pt-2">
-        <button @click="changeDay(-1)" class="p-2 rounded-xl active:bg-slate-100 transition-colors">
-          <ChevronLeft :size="20" class="text-slate-500" />
-        </button>
-        <div class="text-center">
-          <p class="text-sm font-semibold text-slate-800">{{ displayDate }}</p>
-          <p class="text-xs text-slate-400">{{ hijriStr }}</p>
-        </div>
-        <button @click="changeDay(1)" :disabled="isToday" class="p-2 rounded-xl active:bg-slate-100 transition-colors disabled:opacity-30">
-          <ChevronRight :size="20" class="text-slate-500" />
-        </button>
-      </div>
+    <div class="pb-8 space-y-4">
 
-      <!-- Mode Haid notice -->
-      <div v-if="cycleStore.isHaidActive" class="mx-4 p-3 rounded-2xl bg-rose-50 border border-rose-100 flex items-center gap-2">
-        <span class="text-lg">🌸</span>
-        <p class="text-xs text-rose-600 font-medium">Mode Haid aktif — sholat tidak diwajibkan, tapi tetap dzikir ya 💕</p>
-      </div>
+      <!-- ── CALENDAR HERO ─────────────────────────────────── -->
+      <div class="mx-4 rounded-3xl bg-white border border-rose-100/70 shadow-sm overflow-hidden">
 
-      <!-- Prayer schedule + status -->
-      <div class="mx-4 card">
-        <h2 class="text-sm font-semibold text-slate-700 mb-3">Jadwal Sholat</h2>
-        <div v-if="prayerTimesLoading" class="space-y-3">
-          <div v-for="i in 5" :key="i" class="h-14 rounded-xl bg-slate-100 animate-pulse" />
+        <!-- Month nav -->
+        <div class="flex items-center justify-between px-4 pt-4 pb-2">
+          <button @click="prevCalMonth" class="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 active:scale-90 transition-all">
+            <ChevronLeft :size="16" class="text-rose-400" />
+          </button>
+          <div class="text-center">
+            <p class="text-sm font-bold text-slate-800">{{ calMonthLabel }}</p>
+            <p class="text-[11px] text-rose-400 font-medium">{{ calHijriLabel }}</p>
+          </div>
+          <button @click="nextCalMonth" :disabled="isCalCurrentMonth" class="flex h-8 w-8 items-center justify-center rounded-full bg-rose-50 active:scale-90 transition-all disabled:opacity-30">
+            <ChevronRight :size="16" class="text-rose-400" />
+          </button>
         </div>
-        <div v-else-if="prayerTimes">
-          <PrayerCheckItem
-            v-for="p in PRAYERS"
-            :key="p.key"
-            :prayer="{ ...p, time: prayerTimes[p.key], isUdzur: cycleStore.isHaidActive }"
-            :status="prayerStore.getStatus(selectedDate, p.key.toLowerCase())"
-            @openStatus="openStatusModal(p)"
-          />
-        </div>
-        <p v-else class="text-sm text-slate-400 text-center py-4">
-          Gagal memuat jadwal. <button @click="loadPrayerTimes" class="text-primary-600 underline">Coba lagi</button>
-        </p>
-      </div>
 
-      <!-- Streak card -->
-      <div class="mx-4 card flex items-center justify-between">
-        <div>
-          <p class="text-sm font-semibold text-slate-700">Streak Sholat</p>
-          <p class="text-xs text-slate-400 mt-0.5">Berturut-turut penuh 5 waktu</p>
+        <!-- Day-of-week headers -->
+        <div class="grid grid-cols-7 px-2">
+          <div v-for="dl in DAY_LABELS" :key="dl.label" class="py-1 text-center text-[10px] font-bold tracking-wide" :class="dl.weekend ? 'text-rose-400' : 'text-slate-400'">
+            {{ dl.label }}
+          </div>
         </div>
-        <div class="flex items-center gap-1.5">
-          <Flame :size="22" class="text-orange-400" />
-          <span class="text-2xl font-bold text-orange-500">{{ prayerStore.streak }}</span>
-          <span class="text-xs text-slate-400">hari</span>
-        </div>
-      </div>
 
-      <!-- Weekly summary -->
-      <div class="mx-4 card">
-        <h2 class="text-sm font-semibold text-slate-700 mb-3">Ringkasan 7 Hari</h2>
-        <div class="grid grid-cols-7 gap-1">
-          <div
-            v-for="day in weekSummary"
-            :key="day.date"
-            class="flex flex-col items-center gap-1"
+        <!-- Calendar cells -->
+        <div class="grid grid-cols-7 px-2 pb-3 gap-y-1">
+          <div v-for="n in calFirstDayOffset" :key="`e-${n}`" />
+          <button
+            v-for="cell in calCells"
+            :key="cell.dateStr"
+            @click="selectCalDate(cell.dateStr)"
+            :disabled="cell.isFuture"
+            class="relative flex flex-col items-center justify-center py-1.5 rounded-2xl transition-all active:scale-90 disabled:opacity-30 disabled:cursor-default"
+            :class="calCellClass(cell)"
           >
-            <p class="text-xs text-slate-400">{{ day.label }}</p>
-            <div
-              class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-semibold"
-              :class="day.complete ? 'bg-primary-500 text-white' : 'bg-slate-100 text-slate-400'"
-            >
-              {{ day.count }}/5
+            <span v-if="cell.isToday && cell.dateStr !== selectedDate" class="absolute inset-0.5 rounded-xl ring-2 ring-rose-300/50" />
+            <span class="text-[13px] font-bold leading-none" :class="cell.dateStr === selectedDate ? 'text-white' : cell.isToday ? 'text-rose-600' : 'text-slate-700'">{{ cell.day }}</span>
+            <div class="mt-1 flex items-center gap-[2px]">
+              <template v-if="cell.isUdzur">
+                <span class="text-[7px] text-rose-300">🌸</span>
+              </template>
+              <template v-else-if="cell.count > 0">
+                <div v-for="i in 5" :key="i" class="h-[4px] w-[4px] rounded-full transition-all"
+                  :class="i <= cell.count
+                    ? (cell.dateStr === selectedDate ? 'bg-white/80' : cell.count === 5 ? 'bg-emerald-400' : 'bg-amber-400')
+                    : (cell.dateStr === selectedDate ? 'bg-white/25' : 'bg-slate-200')" />
+              </template>
+              <template v-else>
+                <div class="h-[4px] w-[4px] rounded-full bg-slate-200" />
+              </template>
             </div>
+          </button>
+        </div>
+
+        <!-- Selected date bar -->
+        <div class="border-t border-rose-50 px-4 py-2.5 flex items-center justify-between bg-gradient-to-r from-rose-50/60 to-pink-50/40">
+          <div>
+            <p class="text-xs font-bold text-slate-700">{{ isToday ? '✨ Hari Ini' : displayDate }}</p>
+            <p class="text-[11px] text-rose-400 mt-0.5">{{ hijriStr }}</p>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <div class="px-2.5 py-1 rounded-full text-[11px] font-bold" :class="dayCompletionCount === 5 ? 'bg-emerald-100 text-emerald-700' : dayCompletionCount > 0 ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'">
+              {{ dayCompletionCount }}/5
+            </div>
+            <span v-if="dayCompletionCount === 5" class="text-base">🏆</span>
           </div>
         </div>
       </div>
+
+      <!-- ── HAID NOTICE ─────────────────────────────────────── -->
+      <transition name="slide-down">
+        <div v-if="cycleStore.isHaidActive" class="mx-4 flex items-center gap-3 rounded-3xl bg-gradient-to-r from-rose-50 to-pink-50 border border-rose-100 px-4 py-3">
+          <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl bg-rose-100">
+            <span class="text-base">🌸</span>
+          </div>
+          <p class="text-xs text-rose-600 font-medium leading-relaxed">Mode Haid aktif — sholat tidak diwajibkan. Tetap dzikir dan berdoa ya, sayaang 💕</p>
+        </div>
+      </transition>
+
+      <!-- ── PRAYER CARDS ────────────────────────────────────── -->
+      <PrayerChecklist
+        :date="selectedDate"
+        :prayer-times="prayerTimes"
+        :show-header="false"
+      />
+
+      <!-- ── STREAK ─────────────────────────────────────────── -->
+      <div class="mx-4 rounded-3xl bg-gradient-to-br from-amber-50 via-orange-50 to-rose-50 border border-amber-100/60 px-5 py-4 flex items-center gap-4">
+        <div class="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500 shadow-lg shadow-orange-200/60">
+          <Flame :size="28" class="text-white" />
+          <div v-if="prayerStore.streak > 0" class="absolute -top-1.5 -right-1.5 flex h-5 min-w-[20px] items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white">
+            {{ prayerStore.streak }}
+          </div>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-bold text-slate-800">Streak Sholat</p>
+          <p class="text-xs text-slate-500 mt-0.5">Berturut-turut penuh 5 waktu</p>
+          <div class="mt-2 h-1.5 rounded-full bg-amber-100 overflow-hidden">
+            <div class="h-full rounded-full bg-gradient-to-r from-amber-400 to-orange-500 transition-all duration-700" :style="{ width: `${Math.min(100, (prayerStore.streak / 30) * 100)}%` }" />
+          </div>
+          <p class="text-[10px] text-slate-400 mt-1">{{ prayerStore.streak }} / 30 hari milestone</p>
+        </div>
+      </div>
+
+      <!-- ── MONTHLY SUMMARY ───────────────────────────────── -->
+      <div class="mx-4 rounded-3xl bg-white border border-slate-100 overflow-hidden">
+        <div class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-50">
+          <div>
+            <h2 class="text-sm font-bold text-slate-800">Ringkasan {{ calMonthLabel }}</h2>
+            <p class="text-xs text-slate-400 mt-0.5">{{ monthCompleteDays }} hari penuh dari {{ calCells.filter(c => !c.isFuture).length }} hari</p>
+          </div>
+          <div class="text-right">
+            <p class="text-2xl font-black" :class="monthPct >= 80 ? 'text-emerald-500' : monthPct >= 50 ? 'text-amber-500' : 'text-rose-400'">{{ monthPct }}%</p>
+            <p class="text-[10px] text-slate-400">konsistensi</p>
+          </div>
+        </div>
+        <div class="px-5 py-3 border-b border-slate-50">
+          <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+            <div class="h-full rounded-full transition-all duration-1000" :class="monthPct >= 80 ? 'bg-gradient-to-r from-emerald-400 to-primary-500' : monthPct >= 50 ? 'bg-gradient-to-r from-amber-400 to-orange-400' : 'bg-gradient-to-r from-rose-400 to-pink-500'" :style="{ width: `${monthPct}%` }" />
+          </div>
+        </div>
+        <div class="px-4 py-3 grid grid-cols-7 gap-1.5">
+          <div v-for="cell in calCells" :key="`sum-${cell.dateStr}`" class="flex flex-col items-center gap-0.5">
+            <div class="h-7 w-7 rounded-xl flex items-center justify-center text-[10px] font-bold cursor-pointer transition-all active:scale-90" :class="summaryDotClass(cell)" @click="selectCalDate(cell.dateStr)">
+              {{ cell.isUdzur ? '🌸' : cell.count === 5 ? '✓' : cell.count > 0 ? cell.count : '' }}
+            </div>
+            <p class="text-[8px] text-slate-400">{{ dayjs(cell.dateStr).format('D') }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-4 px-5 pb-4 flex-wrap">
+          <div class="flex items-center gap-1.5"><div class="h-3 w-3 rounded-md bg-emerald-500" /><span class="text-[10px] text-slate-400">Penuh (5/5)</span></div>
+          <div class="flex items-center gap-1.5"><div class="h-3 w-3 rounded-md bg-amber-400" /><span class="text-[10px] text-slate-400">Sebagian</span></div>
+          <div class="flex items-center gap-1.5"><div class="text-[10px]">🌸</div><span class="text-[10px] text-slate-400">Haid/Udzur</span></div>
+          <div class="flex items-center gap-1.5"><div class="h-3 w-3 rounded-md bg-slate-100 border border-slate-200" /><span class="text-[10px] text-slate-400">Belum</span></div>
+        </div>
+      </div>
+
     </div>
 
-    <!-- Status modal -->
-    <ModalBase v-model="showStatusModal" :title="`Status: ${selectedPrayer?.name || ''}`">
-      <div class="grid grid-cols-2 gap-2 p-4">
-        <button
-          v-for="s in PRAYER_STATUSES"
-          :key="s.value"
-          @click="setPrayerStatus(s.value)"
-          class="flex flex-col items-center gap-1.5 py-4 rounded-2xl border-2 transition-all active:scale-95"
-          :class="prayerStore.getStatus(selectedDate, selectedPrayer?.key) === s.value
-            ? 'border-primary-500 bg-primary-50'
-            : 'border-slate-100 bg-white hover:border-slate-200'"
-        >
-          <span class="text-2xl">{{ s.emoji }}</span>
-          <span class="text-xs font-semibold text-slate-700">{{ s.label }}</span>
-        </button>
-        <button
-          @click="setPrayerStatus('skip')"
-          class="col-span-2 flex items-center justify-center gap-2 py-3 rounded-2xl border-2 border-red-100 bg-red-50 text-red-400 text-sm font-medium active:scale-95 transition-all"
-        >
-          <X :size="16" /> Tidak Sholat
-        </button>
-      </div>
-    </ModalBase>
   </PageWrapper>
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import { ChevronLeft, ChevronRight, Flame, X, Settings } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight, Flame, Settings } from 'lucide-vue-next'
 import { RouterLink } from 'vue-router'
 import dayjs from 'dayjs'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'
-import PrayerCheckItem from '@/components/prayer/PrayerCheckItem.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
+import PrayerChecklist from '@/components/dashboard/PrayerChecklist.vue'
 
 import { usePrayerStore } from '@/stores/prayer'
 import { useCycleStore } from '@/stores/cycle'
@@ -132,81 +175,118 @@ const prayerStore = usePrayerStore()
 const cycleStore = useCycleStore()
 const settingsStore = useSettingsStore()
 const { fetchByCity } = usePrayerTimes()
-const { formatHijri } = useHijriDate()
+const { formatHijri, toHijri } = useHijriDate()
 
 const today = dayjs()
 const selectedDate = ref(today.format('YYYY-MM-DD'))
 const prayerTimes = ref(null)
 const prayerTimesLoading = ref(false)
 
+const calMonth = ref(today.startOf('month'))
+
 const isToday = computed(() => selectedDate.value === today.format('YYYY-MM-DD'))
+const isCalCurrentMonth = computed(() => calMonth.value.isSame(today.startOf('month'), 'month'))
+
 const displayDate = computed(() => {
   const d = dayjs(selectedDate.value)
-  return d.isSame(today, 'day') ? 'Hari Ini' : d.format('dddd, D MMMM YYYY')
+  return d.isSame(today, 'day') ? 'Hari Ini' : d.locale('id').format('dddd, D MMMM YYYY')
 })
 const hijriStr = computed(() => formatHijri(dayjs(selectedDate.value)))
+const calMonthLabel = computed(() => calMonth.value.locale('id').format('MMMM YYYY'))
+const calHijriLabel = computed(() => {
+  const h1 = toHijri(calMonth.value.toDate())
+  const h2 = toHijri(calMonth.value.endOf('month').toDate())
+  if (h1.month !== h2.month) return `${h1.monthNameId} – ${h2.monthNameId} ${h2.year} H`
+  return `${h1.monthNameId} ${h1.year} H`
+})
 
-const PRAYERS = [
-  { key: 'Fajr',    name: 'Subuh' },
-  { key: 'Dhuhr',   name: 'Dzuhur' },
-  { key: 'Asr',     name: 'Ashar' },
-  { key: 'Maghrib', name: 'Maghrib' },
-  { key: 'Isha',    name: 'Isya' },
+const DAY_LABELS = [
+  { label: 'Min', weekend: true }, { label: 'Sen', weekend: false },
+  { label: 'Sel', weekend: false }, { label: 'Rab', weekend: false },
+  { label: 'Kam', weekend: false }, { label: 'Jum', weekend: true },
+  { label: 'Sab', weekend: true },
 ]
 
-const PRAYER_STATUSES = [
-  { value: 'tepat_waktu', label: 'Tepat Waktu', emoji: '⏰' },
-  { value: 'terlambat', label: 'Terlambat', emoji: '🕰️' },
-  { value: 'berjamaah', label: 'Berjamaah', emoji: '🕌' },
-  { value: 'munfarid', label: 'Munfarid', emoji: '🤲' },
-]
+const PRAYER_KEYS = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha']
 
-function changeDay(delta) {
-  selectedDate.value = dayjs(selectedDate.value).add(delta, 'day').format('YYYY-MM-DD')
+const calCells = computed(() => {
+  const start = calMonth.value.startOf('month')
+  const daysInMonth = calMonth.value.daysInMonth()
+  return Array.from({ length: daysInMonth }, (_, i) => {
+    const d = start.add(i, 'day')
+    const dateStr = d.format('YYYY-MM-DD')
+    const log = prayerStore.logs[dateStr]
+    const isUdzur = log?.is_udzur || false
+    const count = isUdzur ? 5 : PRAYER_KEYS.filter((k) => {
+      const s = prayerStore.getStatus(dateStr, k)
+      return s && s !== 'skip'
+    }).length
+    return { day: d.date(), dateStr, dayOfWeek: d.day(), isToday: d.isSame(today, 'day'), isFuture: d.isAfter(today, 'day'), count, isUdzur }
+  })
+})
+
+const calFirstDayOffset = computed(() => calCells.value[0]?.dayOfWeek ?? 0)
+
+const monthCompleteDays = computed(() => calCells.value.filter((c) => c.count === 5 && !c.isFuture).length)
+const monthPct = computed(() => {
+  const past = calCells.value.filter((c) => !c.isFuture)
+  if (!past.length) return 0
+  return Math.round((monthCompleteDays.value / past.length) * 100)
+})
+
+function calCellClass(cell) {
+  if (cell.dateStr === selectedDate.value) return 'bg-gradient-to-br from-rose-500 to-pink-500 shadow-md shadow-rose-200/60'
+  if (cell.isToday) return 'bg-rose-50'
+  if (cell.isFuture) return ''
+  return 'hover:bg-slate-50'
 }
 
-const showStatusModal = ref(false)
-const selectedPrayer = ref(null)
-
-function openStatusModal(prayer) {
-  selectedPrayer.value = prayer
-  showStatusModal.value = true
+function summaryDotClass(cell) {
+  if (cell.dateStr === selectedDate.value) return 'bg-gradient-to-br from-rose-500 to-pink-500 text-white ring-2 ring-rose-300'
+  if (cell.isUdzur) return 'bg-rose-50 border border-rose-200'
+  if (cell.count === 5) return 'bg-emerald-500 text-white'
+  if (cell.count > 0) return 'bg-amber-400 text-white'
+  if (cell.isFuture) return 'bg-transparent border border-dashed border-slate-200 text-slate-300'
+  return 'bg-slate-100 text-slate-300'
 }
 
-function setPrayerStatus(status) {
-  prayerStore.setStatus(selectedPrayer.value.key.toLowerCase(), status, selectedDate.value)
-  showStatusModal.value = false
-  if (status !== 'skip') window.$toast?.('Alhamdulillah 🤲', 'success')
+const dayCompletionCount = computed(() => {
+  const log = prayerStore.logs[selectedDate.value]
+  if (log?.is_udzur) return 5
+  return PRAYER_KEYS.filter((k) => {
+    const s = prayerStore.getStatus(selectedDate.value, k)
+    return s && s !== 'skip'
+  }).length
+})
+
+function prevCalMonth() { calMonth.value = calMonth.value.subtract(1, 'month') }
+function nextCalMonth() { if (!isCalCurrentMonth.value) calMonth.value = calMonth.value.add(1, 'month') }
+function selectCalDate(dateStr) {
+  selectedDate.value = dateStr
+  const d = dayjs(dateStr)
+  if (!d.isSame(calMonth.value, 'month')) calMonth.value = d.startOf('month')
 }
 
 async function loadPrayerTimes() {
   prayerTimesLoading.value = true
   try {
-    // fetchByCity hanya fetch hari ini — untuk date berbeda pakai fetchByCoords
-    // Sederhananya: selalu fetch ulang jika date berubah
     const city    = settingsStore.city    || 'Jakarta'
     const country = settingsStore.country || 'Indonesia'
-    const result  = await fetchByCity(city, country, selectedDate.value)
-    prayerTimes.value = result
-  } catch (e) {
-    prayerTimes.value = null
-  } finally {
-    prayerTimesLoading.value = false
-  }
+    prayerTimes.value = await fetchByCity(city, country, selectedDate.value)
+  } catch { prayerTimes.value = null }
+  finally { prayerTimesLoading.value = false }
 }
-
-const weekSummary = computed(() => {
-  return Array.from({ length: 7 }, (_, i) => {
-    const d = today.subtract(6 - i, 'day')
-    const dateStr = d.format('YYYY-MM-DD')
-    const count = PRAYERS.filter(p => {
-      const s = prayerStore.getStatus(dateStr, p.key.toLowerCase())
-      return s && s !== 'skip'
-    }).length
-    return { date: dateStr, label: d.format('dd'), count, complete: count === 5 }
-  })
-})
 
 watch(selectedDate, loadPrayerTimes)
 onMounted(loadPrayerTimes)
 </script>
+
+<style scoped>
+.slide-down-enter-active, .slide-down-leave-active { transition: all 0.3s ease; }
+.slide-down-enter-from { opacity: 0; transform: translateY(-8px); }
+.slide-down-leave-to { opacity: 0; transform: translateY(-4px); }
+.badge-pop-enter-active { transition: all 0.25s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.badge-pop-enter-from { opacity: 0; transform: scale(0.6); }
+.badge-pop-leave-active { transition: all 0.15s ease; }
+.badge-pop-leave-to { opacity: 0; transform: scale(0.8); }
+</style>

@@ -69,7 +69,7 @@
       <div class="mt-5 grid grid-cols-2 gap-2 text-left">
         <div class="rounded-2xl border border-white/70 bg-white/75 backdrop-blur px-3.5 py-3 shadow-sm">
           <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Status</p>
-          <p class="mt-1 text-sm font-bold text-slate-700">{{ isHaidActive ? 'Mode Haid Aktif' : 'Siap untuk bersiap' }}</p>
+          <p class="mt-1 text-sm font-bold text-slate-700">{{ isHaidActive ? 'Mode Haid Aktif' : 'Masa Suci  ✨' }}</p>
         </div>
         <div class="rounded-2xl border border-white/70 bg-white/75 backdrop-blur px-3.5 py-3 shadow-sm">
           <p class="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-400">Hitung Mundur</p>
