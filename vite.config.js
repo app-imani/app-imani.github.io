@@ -16,7 +16,7 @@ export default defineConfig({
       manifest: {
         name: 'Imani — Muslimah Daily Tracker',
         short_name: 'Imani',
-        description: 'Muslimah Daily Habit & Cycle Tracker',
+        description: 'Muslimah Daily Habit & Haid Tracker',
         theme_color: '#059669',
         background_color: '#f8fafc',
         display: 'standalone',

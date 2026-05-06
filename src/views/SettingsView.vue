@@ -86,7 +86,7 @@
       <div class="mx-4 card">
         <h2 class="text-sm font-semibold text-slate-700 mb-2">ℹ️ Tentang Imani</h2>
         <p class="text-xs text-slate-400 leading-relaxed">
-          Imani v1.0 — Muslimah Daily Habit & Cycle Tracker<br/>
+          Imani v1.0 — Muslimah Daily Habit & Haid Tracker<br/>
           Dibuat dengan ❤️ untuk muslimah di seluruh dunia.<br/>
           <span class="text-primary-500">Open source · Privacy first</span>
         </p>
