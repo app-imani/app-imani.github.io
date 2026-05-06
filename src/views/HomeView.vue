@@ -4,8 +4,14 @@
       <TopBar :show-back="false">
         <template #title>
           <div class="flex flex-col items-center">
-            <p class="text-xs text-slate-400 font-normal">{{ hijriDateStr }}</p>
-            <h1 class="text-base font-bold text-slate-800 leading-tight">
+            <RouterLink
+              to="/hijri-calendar"
+              class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-rose-50 border border-rose-100 active:scale-95 transition-all"
+            >
+              <span class="text-[10px]">🌙</span>
+              <span class="text-[10px] font-semibold text-rose-500">{{ hijriDateStr }}</span>
+            </RouterLink>
+            <h1 class="text-base font-bold text-slate-800 leading-tight mt-0.5">
               {{ greeting }}, {{ settingsStore.displayName || 'Saudariku' }} 👋
             </h1>
           </div>
@@ -55,10 +61,13 @@
               <p class="text-[10px] font-semibold uppercase tracking-wide text-emerald-600">Progres</p>
               <p class="text-sm font-bold text-emerald-700">{{ prayerProgressPercent }}%</p>
             </div>
-            <div class="shrink-0 rounded-xl bg-slate-50 border border-slate-100 px-3 py-2">
-              <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-400">Hijriah</p>
-              <p class="text-sm font-bold text-slate-700 whitespace-nowrap">{{ hijriDateShort }}</p>
-            </div>
+            <RouterLink
+              to="/hijri-calendar"
+              class="shrink-0 rounded-xl bg-gradient-to-br from-rose-50 to-pink-50 border border-rose-100 px-3 py-2 flex flex-col active:scale-95 transition-all"
+            >
+              <p class="text-[10px] font-semibold uppercase tracking-wide text-rose-400">🌙 Hijriah</p>
+              <p class="text-sm font-bold text-rose-700 whitespace-nowrap">{{ hijriDateShort }}</p>
+            </RouterLink>
             <div v-if="todayFastingType" class="shrink-0 rounded-xl bg-amber-50 border border-amber-100 px-3 py-2">
               <p class="text-[10px] font-semibold uppercase tracking-wide text-amber-500">Puasa Hari Ini</p>
               <p class="text-sm font-bold text-amber-700 whitespace-nowrap">{{ todayFastingType.name }}</p>

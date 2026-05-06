@@ -68,6 +68,12 @@ const routes = [
     component: () => import('@/views/SettingsView.vue'),
     meta: { requiresAuth: true, title: 'Pengaturan' },
   },
+  {
+    path: '/hijri-calendar',
+    name: 'hijri-calendar',
+    component: () => import('@/views/HijriCalendarView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Kalender Hijriah' },
+  },
 
   // Catch-all redirect
   {
