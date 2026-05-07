@@ -7,6 +7,7 @@
     </RouterView>
     <ToastNotif />
     <RewardAnimation />
+    <AudioPlayer />
   </div>
 </template>
 
@@ -15,6 +16,7 @@ import { computed, onMounted, watch } from 'vue'
 import { useCycleStore } from '@/stores/cycle'
 import ToastNotif from '@/components/ui/ToastNotif.vue'
 import RewardAnimation from '@/components/ui/RewardAnimation.vue'
+import AudioPlayer from '@/components/ui/AudioPlayer.vue'
 import { useOfflineSync } from '@/composables/useOfflineSync'
 import { useGasApi } from '@/composables/useGasApi'
 

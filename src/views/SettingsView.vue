@@ -66,6 +66,26 @@
         <p v-else class="mt-2 text-xs text-emerald-500 font-medium">✓ Izin notifikasi diberikan</p>
       </div>
 
+      <!-- Notifikasi Momen Spesial (F-06) -->
+      <div class="mx-4 card">
+        <h2 class="text-sm font-semibold text-slate-700 mb-3">✨ Notifikasi Momen Istimewa</h2>
+        <div class="space-y-3">
+          <ToggleRow v-model="form.notifMalamJumat" label="Malam Jum'at" desc="Pengingat amalan malam Jum'at" />
+          <ToggleRow v-model="form.notifAyyamulBidh" label="Ayyamul Bidh" desc="13, 14, 15 setiap bulan Hijriah" />
+          <ToggleRow v-model="form.notifSeninaKamis" label="Senin & Kamis" desc="Pengingat puasa sunnah" />
+          <ToggleRow v-model="form.notifSpecialMoment" label="Momen Istimewa Lainnya" desc="10 Dzulhijjah, Nisfu Sya'ban, dll" />
+        </div>
+      </div>
+
+      <!-- Mode Udzur (F-01) -->
+      <div class="mx-4 card">
+        <h2 class="text-sm font-semibold text-slate-700 mb-1">🌸 Mode Udzur (Haid)</h2>
+        <p class="text-xs text-slate-400 mb-3 leading-relaxed">Aktifkan saat haid. Tampilkan amalan alternatif (dzikir, doa, sedekah) yang tetap bernilai ibadah.</p>
+        <RouterLink to="/amal" class="block w-full py-2.5 rounded-xl bg-pink-50 text-pink-600 text-xs font-semibold text-center active:scale-95 transition-transform">
+          🌸 Kelola Mode Udzur di Halaman Amalan
+        </RouterLink>
+      </div>
+
       <!-- Data & Privacy -->
       <div class="mx-4 card">
         <h2 class="text-sm font-semibold text-slate-700 mb-3">🔒 Data & Privasi</h2>
@@ -134,6 +154,7 @@
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
+import { RouterLink } from 'vue-router'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'
@@ -171,6 +192,10 @@ const form = reactive({
   notifPrayer: true,
   notifAmal: true,
   notifFasting: false,
+  notifMalamJumat: true,
+  notifAyyamulBidh: true,
+  notifSeninaKamis: false,
+  notifSpecialMoment: true,
 })
 
 onMounted(() => {
@@ -181,6 +206,10 @@ onMounted(() => {
   form.notifPrayer = settingsStore.notifPrayer ?? true
   form.notifAmal = settingsStore.notifAmal ?? true
   form.notifFasting = settingsStore.notifFasting ?? false
+  form.notifMalamJumat = settingsStore.notifMalamJumat ?? true
+  form.notifAyyamulBidh = settingsStore.notifAyyamulBidh ?? true
+  form.notifSeninaKamis = settingsStore.notifSeninaKamis ?? false
+  form.notifSpecialMoment = settingsStore.notifSpecialMoment ?? true
 })
 
 async function detectLocation() {
@@ -209,6 +238,10 @@ function saveSettings() {
   settingsStore.notifPrayer = form.notifPrayer
   settingsStore.notifAmal = form.notifAmal
   settingsStore.notifFasting = form.notifFasting
+  settingsStore.notifMalamJumat = form.notifMalamJumat
+  settingsStore.notifAyyamulBidh = form.notifAyyamulBidh
+  settingsStore.notifSeninaKamis = form.notifSeninaKamis
+  settingsStore.notifSpecialMoment = form.notifSpecialMoment
   settingsStore.save()
   window.$toast?.('Pengaturan disimpan ✨', 'success')
 }

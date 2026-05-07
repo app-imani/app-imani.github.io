@@ -1,0 +1,58 @@
+[
+  {
+    "id": "mq_001",
+    "syukur": "Hari ini aku bersyukur atas...",
+    "amal": "Amalan terbaik yang aku lakukan hari ini adalah...",
+    "perbaikan": "Besok aku ingin lebih baik dalam...",
+    "closing_quote": "Dan jika kamu menghitung nikmat Allah, niscaya kamu tidak akan mampu menghitungnya. (QS. Ibrahim: 34)",
+    "closing_arabic": "وَإِن تَعُدُّوا نِعْمَتَ اللَّهِ لَا تُحْصُوهَا"
+  },
+  {
+    "id": "mq_002",
+    "syukur": "Salah satu hal yang membuat hatiku tenang hari ini adalah...",
+    "amal": "Satu kebaikan kecil yang aku lakukan tanpa disadari orang lain hari ini...",
+    "perbaikan": "Kata-kata atau sikap yang ingin aku perbaiki esok hari...",
+    "closing_quote": "Sesungguhnya bersama kesulitan ada kemudahan. (QS. Al-Insyirah: 6)",
+    "closing_arabic": "إِنَّ مَعَ الْعُسْرِ يُسْرًا"
+  },
+  {
+    "id": "mq_003",
+    "syukur": "Nikmat sehat yang aku rasakan hari ini...",
+    "amal": "Dzikir atau doa yang paling terasa di hati hari ini...",
+    "perbaikan": "Waktu yang terbuang sia-sia yang ingin aku manfaatkan lebih baik...",
+    "closing_quote": "Ingatlah, hanya dengan mengingat Allah hati menjadi tenteram. (QS. Ar-Ra'd: 28)",
+    "closing_arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ"
+  },
+  {
+    "id": "mq_004",
+    "syukur": "Orang yang membuatku bersyukur hari ini adalah...",
+    "amal": "Satu hal yang aku lakukan hari ini semata-mata karena Allah...",
+    "perbaikan": "Niat yang ingin aku luruskan untuk esok hari...",
+    "closing_quote": "Barangsiapa bertakwa kepada Allah niscaya Dia akan mengadakan baginya jalan keluar. (QS. At-Thalaq: 2)",
+    "closing_arabic": "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا"
+  },
+  {
+    "id": "mq_005",
+    "syukur": "Kemudahan yang Allah berikan padaku hari ini...",
+    "amal": "Cara aku menjaga lisan dan hati hari ini...",
+    "perbaikan": "Hubunganku dengan Allah yang ingin aku pererat esok hari...",
+    "closing_quote": "Dan Allah bersama orang-orang yang sabar. (QS. Al-Baqarah: 249)",
+    "closing_arabic": "وَاللَّهُ مَعَ الصَّابِرِينَ"
+  },
+  {
+    "id": "mq_006",
+    "syukur": "Rezeki tak terduga yang aku terima hari ini...",
+    "amal": "Amalan rutin yang berhasil aku jaga hari ini meski berat...",
+    "perbaikan": "Dosa atau kesalahan yang ingin aku taubati sekarang...",
+    "closing_quote": "Sesungguhnya Allah tidak menyia-nyiakan pahala orang yang berbuat baik. (QS. At-Taubah: 120)",
+    "closing_arabic": "إِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ"
+  },
+  {
+    "id": "mq_007",
+    "syukur": "Satu hal kecil yang sering aku lupakan untuk disyukuri...",
+    "amal": "Cara aku bermanfaat bagi orang lain hari ini...",
+    "perbaikan": "Sifat atau kebiasaan buruk yang ingin aku tinggalkan...",
+    "closing_quote": "Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lain. (HR. Ahmad)",
+    "closing_arabic": "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ"
+  }
+]

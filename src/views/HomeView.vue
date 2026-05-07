@@ -41,6 +41,7 @@
       <!-- Mode Haid Banner -->
       <div v-if="cycleStore.isHaidActive" class="px-4">
         <HaidModeBanner @selesaiHaid="openSelesaiHaidModal" />
+        <SpecialMomentBanner />
       </div>
 
       <!-- Sholat quick checklist -->
@@ -145,6 +146,7 @@ import dayjs from 'dayjs'
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import HaidModeBanner from '@/components/dashboard/HaidModeBanner.vue'
+import SpecialMomentBanner from '@/components/home/SpecialMomentBanner.vue'
 import StreakWidget from '@/components/dashboard/StreakWidget.vue'
 import CycleStatusBadge from '@/components/dashboard/CycleStatusBadge.vue'
 import PrayerCountdownCard from '@/components/dashboard/PrayerCountdownCard.vue'

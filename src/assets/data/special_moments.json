@@ -1,0 +1,76 @@
+[
+  {
+    "id": "malam_jumat",
+    "title": "Malam Jumat",
+    "description": "Malam dengan keutamaan berlipat ganda — baca Surah Al-Kahfi & perbanyak selawat",
+    "icon": "🌙",
+    "trigger": { "type": "weekly", "day": 4, "time": "20:00" },
+    "duration_days": 1,
+    "notification": {
+      "title": "Malam Jumat telah tiba 🌙",
+      "body": "Yuk baca Surah Al-Kahfi & perbanyak selawat kepada Nabi ﷺ"
+    },
+    "route": "/amal",
+    "setting_key": "notifMalamJumat",
+    "color": "green"
+  },
+  {
+    "id": "ayyamul_bidh",
+    "title": "Ayyamul Bidh",
+    "description": "Puasa sunnah tanggal 13, 14, 15 setiap bulan Hijriyah",
+    "icon": "🌕",
+    "trigger": { "type": "hijri_monthly", "hijri_day": 12, "time": "07:00" },
+    "duration_days": 3,
+    "notification": {
+      "title": "Ayyamul Bidh dimulai besok 🌕",
+      "body": "Tanggal 13-15 bulan ini. Niat puasa sunnah Ayyamul Bidh yuk!"
+    },
+    "route": "/fasting",
+    "setting_key": "notifAyyamulBidh",
+    "color": "yellow"
+  },
+  {
+    "id": "10_dzulhijjah",
+    "title": "10 Hari Pertama Dzulhijjah",
+    "description": "Hari-hari terbaik dalam setahun untuk beramal",
+    "icon": "🌟",
+    "trigger": { "type": "hijri_range", "hijri_month": 12, "hijri_day_start": 1, "hijri_day_end": 10 },
+    "notification": {
+      "title": "Hari-hari terbaik setahun! 🌟",
+      "body": "Kita di 10 hari pertama Dzulhijjah. Perbanyak dzikir, takbir & amal sholeh"
+    },
+    "route": "/amal",
+    "setting_key": "notifSpecialMoment",
+    "color": "gold"
+  },
+  {
+    "id": "nisfu_syaban",
+    "title": "Malam Nisfu Sya'ban",
+    "description": "Malam penuh ampunan dan penetapan takdir setahun ke depan",
+    "icon": "🌕",
+    "trigger": { "type": "hijri_monthly", "hijri_month": 8, "hijri_day": 14, "time": "20:00" },
+    "duration_days": 1,
+    "notification": {
+      "title": "Malam Nisfu Sya'ban 🌕",
+      "body": "Malam penuh ampunan. Perbanyak istighfar dan doa malam ini"
+    },
+    "route": "/amal",
+    "setting_key": "notifSpecialMoment",
+    "color": "purple"
+  },
+  {
+    "id": "senin_kamis",
+    "title": "Puasa Senin-Kamis",
+    "description": "Hari dimana amal diperlihatkan kepada Allah",
+    "icon": "🌙",
+    "trigger": { "type": "weekly_multi", "days": [0, 3], "time": "22:00" },
+    "duration_days": 1,
+    "notification": {
+      "title": "Besok Hari Senin/Kamis 🌙",
+      "body": "Jangan lupa niat puasa sunnah. Hari dimana amal diperlihatkan kepada Allah"
+    },
+    "route": "/fasting",
+    "setting_key": "notifSeninaKamis",
+    "color": "teal"
+  }
+]

@@ -63,6 +63,24 @@ const routes = [
     meta: { requiresAuth: true, title: 'Tasbih' },
   },
   {
+    path: '/wirid',
+    name: 'wirid',
+    component: () => import('@/views/WiridSholatView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Wirid Sholat' },
+  },
+  {
+    path: '/amal/kalender',
+    name: 'amal-kalender',
+    component: () => import('@/views/AmalKalenderView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Kalender Amalan' },
+  },
+  {
+    path: '/amal/laporan',
+    name: 'amal-laporan',
+    component: () => import('@/views/AmalLaporanView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Laporan Amalan' },
+  },
+  {
     path: '/settings',
     name: 'settings',
     component: () => import('@/views/SettingsView.vue'),

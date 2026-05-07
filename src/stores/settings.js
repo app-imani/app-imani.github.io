@@ -23,6 +23,16 @@ export const useSettingsStore = defineStore('settings', () => {
   const calculationMethod = ref(lsGet('imani_settings_calc_method', 20)) // MUI Indonesia
   const madzhab = ref(lsGet('imani_settings_madzhab', 'syafi\'i'))
 
+  // F-06: Notifikasi momen spesial
+  const notifMalamJumat = ref(lsGet('imani_settings_notif_malam_jumat', true))
+  const notifAyyamulBidh = ref(lsGet('imani_settings_notif_ayyamul_bidh', true))
+  const notifSeninaKamis = ref(lsGet('imani_settings_notif_senin_kamis', false))
+  const notifSpecialMoment = ref(lsGet('imani_settings_notif_special_moment', true))
+
+  // F-07: Audio player
+  const audioPlaybackRate = ref(lsGet('imani_settings_audio_playback_rate', 1.0))
+  const audioAutoPlay = ref(lsGet('imani_settings_audio_auto_play', false))
+
   // Flat city/country accessors
   const city = computed({
     get: () => location.value?.city || '',
@@ -77,6 +87,12 @@ export const useSettingsStore = defineStore('settings', () => {
     lsSet('imani_settings_notif_fasting', notifFasting.value)
     lsSet('imani_settings_calc_method', calculationMethod.value)
     lsSet('imani_settings_location', location.value)
+    lsSet('imani_settings_notif_malam_jumat', notifMalamJumat.value)
+    lsSet('imani_settings_notif_ayyamul_bidh', notifAyyamulBidh.value)
+    lsSet('imani_settings_notif_senin_kamis', notifSeninaKamis.value)
+    lsSet('imani_settings_notif_special_moment', notifSpecialMoment.value)
+    lsSet('imani_settings_audio_playback_rate', audioPlaybackRate.value)
+    lsSet('imani_settings_audio_auto_play', audioAutoPlay.value)
   }
 
   async function saveUserProfile() {
@@ -95,6 +111,8 @@ export const useSettingsStore = defineStore('settings', () => {
   return {
     userId, displayName, isOnboarded, location, notificationEnabled,
     notifPrayer, notifAmal, notifFasting,
+    notifMalamJumat, notifAyyamulBidh, notifSeninaKamis, notifSpecialMoment,
+    audioPlaybackRate, audioAutoPlay,
     city, country, calcMethod,
     prayerReminderMinutes, calculationMethod, madzhab, hasLocation,
     setUser, setOnboarded, setLocation, setNotification, setPrayerReminderMinutes,

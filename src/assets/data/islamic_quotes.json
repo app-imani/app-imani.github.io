@@ -1,0 +1,17 @@
+[
+  { "id": "q001", "arabic": "إِنَّ مَعَ الْعُسْرِ يُسْرًا", "text": "Sesungguhnya bersama kesulitan ada kemudahan.", "source": "QS. Al-Insyirah: 6", "category": "sabar" },
+  { "id": "q002", "arabic": "وَاللَّهُ مَعَ الصَّابِرِينَ", "text": "Dan Allah bersama orang-orang yang sabar.", "source": "QS. Al-Baqarah: 249", "category": "sabar" },
+  { "id": "q003", "arabic": "أَلَا بِذِكْرِ اللَّهِ تَطْمَئِنُّ الْقُلُوبُ", "text": "Ingatlah, hanya dengan mengingat Allah hati menjadi tenteram.", "source": "QS. Ar-Ra'd: 28", "category": "dzikir" },
+  { "id": "q004", "arabic": "وَمَن يَتَّقِ اللَّهَ يَجْعَل لَّهُ مَخْرَجًا", "text": "Barangsiapa bertakwa kepada Allah, niscaya Dia akan mengadakan baginya jalan keluar.", "source": "QS. At-Thalaq: 2", "category": "taqwa" },
+  { "id": "q005", "arabic": "إِنَّ اللَّهَ لَا يُضِيعُ أَجْرَ الْمُحْسِنِينَ", "text": "Sesungguhnya Allah tidak menyia-nyiakan pahala orang yang berbuat baik.", "source": "QS. At-Taubah: 120", "category": "amal" },
+  { "id": "q006", "arabic": "فَإِنَّ مَعَ الْعُسْرِ يُسْرًا", "text": "Maka sesungguhnya bersama kesulitan ada kemudahan.", "source": "QS. Al-Insyirah: 5", "category": "sabar" },
+  { "id": "q007", "arabic": "رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً", "text": "Ya Tuhan kami, berilah kami kebaikan di dunia dan kebaikan di akhirat.", "source": "QS. Al-Baqarah: 201", "category": "doa" },
+  { "id": "q008", "arabic": "خَيْرُ النَّاسِ أَنْفَعُهُمْ لِلنَّاسِ", "text": "Sebaik-baik manusia adalah yang paling bermanfaat bagi manusia lain.", "source": "HR. Ahmad", "category": "amal" },
+  { "id": "q009", "arabic": "الدُّنْيَا سِجْنُ الْمُؤْمِنِ وَجَنَّةُ الْكَافِرِ", "text": "Dunia adalah penjara bagi orang beriman dan surga bagi orang kafir.", "source": "HR. Muslim no. 2956", "category": "zuhud" },
+  { "id": "q010", "arabic": "تَبَسُّمُكَ فِي وَجْهِ أَخِيكَ صَدَقَةٌ", "text": "Senyummu di hadapan saudaramu adalah sedekah.", "source": "HR. Tirmidzi no. 1956", "category": "amal" },
+  { "id": "q011", "arabic": "وَاذْكُر رَّبَّكَ كَثِيرًا", "text": "Dan sebutlah (nama) Tuhanmu sebanyak-banyaknya.", "source": "QS. Ali Imran: 41", "category": "dzikir" },
+  { "id": "q012", "arabic": "إِنَّ اللَّهَ جَمِيلٌ يُحِبُّ الْجَمَالَ", "text": "Sesungguhnya Allah itu indah dan mencintai keindahan.", "source": "HR. Muslim no. 91", "category": "akhlak" },
+  { "id": "q013", "text": "Streak 7 hari berturut-turut! MasyaAllah, semoga Allah teguhkan hati kita dalam ibadah 🌙", "source": "", "category": "motivasi", "milestone": 7 },
+  { "id": "q014", "text": "Alhamdulillah 30 hari beramal! Kamu telah membuktikan bahwa istiqomah itu mungkin. Tetap jaga 💚", "source": "", "category": "motivasi", "milestone": 30 },
+  { "id": "q015", "text": "100 hari streak! SubhanAllah, ini luar biasa. Semoga Allah terima setiap amalan dan doa-doamu 🏆", "source": "", "category": "motivasi", "milestone": 100 }
+]
