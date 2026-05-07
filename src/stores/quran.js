@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { useGasApi } from '@/composables/useGasApi'
+import { useOfflineSync } from '@/composables/useOfflineSync'
 
 /**
  * Store Quran — Target, bookmark, dan progress tilawah
@@ -9,6 +10,7 @@ import { useGasApi } from '@/composables/useGasApi'
 export const useQuranStore = defineStore('quran', () => {
   const { get: lsGet, set: lsSet } = useLocalStorage()
   const { post: gasPost, get: gasGet } = useGasApi()
+  const { offlineSave } = useOfflineSync()
 
   // State
   const bookmark = ref(lsGet('imani_quran_bookmark', { surah: 1, ayah: 1, surahName: 'Al-Fatihah' }))
@@ -114,22 +116,18 @@ export const useQuranStore = defineStore('quran', () => {
 
   async function syncToBackend(userId) {
     if (!userId) return
-    try {
-      const today = new Date().toISOString().split('T')[0]
-      const todayData = progress.value[today]
-      if (!todayData) return
+    const today = new Date().toISOString().split('T')[0]
+    const todayData = progress.value[today]
+    if (!todayData) return
 
-      await gasPost('saveQuranProgress', {
-        userId,
-        surah: todayData.surah,
-        ayah: todayData.ayah,
-        pages: todayData.pages,
-        totalPagesTarget: todayTarget.value,
-        goalType: goal.value.type,
-      })
-    } catch (err) {
-      console.error('[quranStore] Sync gagal:', err)
-    }
+    await offlineSave('saveQuranProgress', {
+      userId,
+      surah: todayData.surah,
+      ayah: todayData.ayah,
+      pages: todayData.pages,
+      totalPagesTarget: todayTarget.value,
+      goalType: goal.value.type,
+    }, gasPost)
   }
 
   return {

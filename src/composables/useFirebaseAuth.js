@@ -41,7 +41,11 @@ export function useFirebaseAuth() {
       const { signInWithPopup } = await import('firebase/auth')
       const result = await signInWithPopup(auth, googleProvider)
       const token = await result.user.getIdToken()
-      await authStore.initSession(result.user, token)
+
+      // Ambil displayName terbaru dari Identity Toolkit (accounts:lookup)
+      const displayName = await fetchDisplayName(token) || result.user.displayName || ''
+
+      await authStore.initSession(result.user, token, displayName)
       redirectAfterLogin()
     } catch (e) {
       if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request') {
@@ -166,6 +170,30 @@ export function useFirebaseAuth() {
     logout,
     resetPassword,
     watchAuthState,
+  }
+}
+
+// ─────────────────────────────────────────
+// Ambil displayName dari Identity Toolkit accounts:lookup
+// Mengembalikan string nama atau null jika gagal
+// ─────────────────────────────────────────
+export async function fetchDisplayName(idToken) {
+  try {
+    const apiKey = import.meta.env.VITE_FIREBASE_API_KEY
+    if (!apiKey || !idToken) return null
+    const res = await fetch(
+      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ idToken }),
+      }
+    )
+    if (!res.ok) return null
+    const json = await res.json()
+    return json?.users?.[0]?.displayName || null
+  } catch {
+    return null
   }
 }
 

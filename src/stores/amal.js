@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { useGasApi } from '@/composables/useGasApi'
+import { useOfflineSync } from '@/composables/useOfflineSync'
 
 /**
  * Store Amal — Dzikir, doa, dan amalan harian
@@ -9,6 +10,7 @@ import { useGasApi } from '@/composables/useGasApi'
 export const useAmalStore = defineStore('amal', () => {
   const { get: lsGet, set: lsSet } = useLocalStorage()
   const { post: gasPost } = useGasApi()
+  const { offlineSave } = useOfflineSync()
 
   // State
   const logs = ref(lsGet('imani_amal_logs', {})) // { 'YYYY-MM-DD': { ... } }
@@ -90,11 +92,7 @@ export const useAmalStore = defineStore('amal', () => {
     const log = logs.value[dateKey]
     if (!log) return
 
-    try {
-      await gasPost('saveAmalLog', { userId, date: dateKey, amalData: log })
-    } catch (err) {
-      console.error('[amalStore] Sync gagal:', err)
-    }
+    await offlineSave('saveAmalLog', { userId, date: dateKey, amalData: log }, gasPost)
   }
 
   return {

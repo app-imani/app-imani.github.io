@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { useGasApi } from '@/composables/useGasApi'
+import { useOfflineSync } from '@/composables/useOfflineSync'
 import { useHijriDate } from '@/composables/useHijriDate'
 
 /**
@@ -10,6 +11,7 @@ import { useHijriDate } from '@/composables/useHijriDate'
 export const useFastingStore = defineStore('fasting', () => {
   const { get: lsGet, set: lsSet } = useLocalStorage()
   const { post: gasPost, get: gasGet } = useGasApi()
+  const { offlineSave } = useOfflineSync()
   const { isRamadhan } = useHijriDate()
 
   // State
@@ -123,11 +125,7 @@ export const useFastingStore = defineStore('fasting', () => {
     const log = logs.value[dateKey]
     if (!log) return
 
-    try {
-      await gasPost('saveFastingLog', { userId, date: dateKey, ...log })
-    } catch (err) {
-      console.error('[fastingStore] Sync gagal:', err)
-    }
+    await offlineSave('saveFastingLog', { userId, date: dateKey, ...log }, gasPost)
   }
 
   async function syncQadhaToBackend(userId, year) {
@@ -136,11 +134,7 @@ export const useFastingStore = defineStore('fasting', () => {
     const counter = qadhaCounter.value[yearKey]
     if (!counter) return
 
-    try {
-      await gasPost('updateQadha', { userId, year: yearKey, ...counter })
-    } catch (err) {
-      console.error('[fastingStore] Sync qadha gagal:', err)
-    }
+    await offlineSave('updateQadha', { userId, year: yearKey, ...counter }, gasPost)
   }
 
   return {

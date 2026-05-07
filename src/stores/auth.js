@@ -10,6 +10,7 @@ export const useAuthStore = defineStore('auth', () => {
   // State
   const user = ref(null)       // { uid, email, displayName, photoURL, onboardingDone }
   const token = ref(null)      // Firebase ID Token (JWT)
+  const spreadsheetId = ref(null) // ID spreadsheet per-user di Google Drive
   const isGuest = ref(false)
   const isLoading = ref(true)  // true saat pertama load (hydrate dari localStorage)
   const guestOnboarded = ref(!!localStorage.getItem('imani_settings_onboarded'))
@@ -46,6 +47,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
 
       const data = response?.data || {}
+      if (data.spreadsheetId) spreadsheetId.value = data.spreadsheetId
       user.value = {
         uid: firebaseUser.uid,
         email: firebaseUser.email,
@@ -110,6 +112,7 @@ export const useAuthStore = defineStore('auth', () => {
   function clearSession() {
     user.value = null
     token.value = null
+    spreadsheetId.value = null
     isGuest.value = false
     localStorage.removeItem(SESSION_KEY)
   }
@@ -137,6 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       user.value = session.user || null
       token.value = session.token || null
+      spreadsheetId.value = session.spreadsheetId || null
       isGuest.value = session.isGuest || false
     } catch {
       clearSession()
@@ -149,15 +153,46 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem(SESSION_KEY, JSON.stringify({
       user: user.value,
       token: token.value,   // Disimpan untuk request saat offline
+      spreadsheetId: spreadsheetId.value,
       isGuest: isGuest.value,
       savedAt: Date.now(),
     }))
   }
 
+  /**
+   * Pastikan spreadsheetId tersedia.
+   * Jika null → panggil initUser ke GAS untuk mendapatkannya.
+   * Dipanggil sebelum operasi sync dari store lain.
+   */
+  async function ensureSpreadsheetId() {
+    if (spreadsheetId.value) return spreadsheetId.value
+    if (!user.value || isGuest.value) return null
+    if (!token.value) return null
+
+    try {
+      const { useGasApi } = await import('@/composables/useGasApi')
+      const { post } = useGasApi()
+      const response = await post('initUser', {
+        displayName: user.value.displayName || '',
+        photoURL: user.value.photoURL || '',
+      })
+      const data = response?.data || {}
+      if (data.spreadsheetId) {
+        spreadsheetId.value = data.spreadsheetId
+        saveToStorage()
+        console.log('[authStore] spreadsheetId diperoleh:', data.spreadsheetId)
+      }
+    } catch (e) {
+      console.warn('[authStore] ensureSpreadsheetId gagal:', e.message)
+    }
+
+    return spreadsheetId.value
+  }
+
   return {
-    user, token, isGuest, isLoading,
+    user, token, spreadsheetId, isGuest, isLoading,
     isAuthenticated, userId, needsOnboarding,
     initSession, continueAsGuest, updateToken,
-    setOnboardingDone, clearSession, hydrateFromStorage,
+    setOnboardingDone, clearSession, hydrateFromStorage, ensureSpreadsheetId,
   }
 })

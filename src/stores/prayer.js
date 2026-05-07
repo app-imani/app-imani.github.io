@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { useGasApi } from '@/composables/useGasApi'
+import { useOfflineSync } from '@/composables/useOfflineSync'
 
 // Status sholat yang valid
 const PRAYER_STATUSES = ['tepat_waktu', 'terlambat', 'berjamaah', 'munfarid', 'skip', null]
@@ -12,6 +13,7 @@ const PRAYER_STATUSES = ['tepat_waktu', 'terlambat', 'berjamaah', 'munfarid', 's
 export const usePrayerStore = defineStore('prayer', () => {
   const { get: lsGet, set: lsSet } = useLocalStorage()
   const { get: gasGet, post: gasPost } = useGasApi()
+  const { offlineSave } = useOfflineSync()
 
   // State
   const logs = ref(lsGet('imani_prayer_logs', {})) // { 'YYYY-MM-DD': { fajr, dhuhr, ... } }
@@ -60,8 +62,9 @@ export const usePrayerStore = defineStore('prayer', () => {
     }
 
     logs.value[dateKey][prayer] = status
-    saveToStorage()
+    saveToStorage()   // ① simpan ke localStorage dulu (sync, instan)
     updateStreak()
+    _bgSync(dateKey)  // ② kirim ke GAS di background (non-blocking)
   }
 
   /**
@@ -71,7 +74,8 @@ export const usePrayerStore = defineStore('prayer', () => {
   function setUdzur(date = null) {
     const dateKey = date || new Date().toISOString().split('T')[0]
     logs.value[dateKey] = createEmptyLog(true)
-    saveToStorage()
+    saveToStorage()   // ① localStorage dulu
+    _bgSync(dateKey)  // ② background sync
   }
 
   /**
@@ -117,24 +121,41 @@ export const usePrayerStore = defineStore('prayer', () => {
   }
 
   /**
-   * Sync log ke GAS backend
+   * Background sync — fire-and-forget, dipanggil otomatis setiap kali ada perubahan.
+   * Jika online  → langsung kirim ke GAS.
+   * Jika offline → masuk IndexedDB queue, dikirim saat kembali online.
    */
-  async function syncToBackend(date, userId) {
-    if (!userId) return
-    const dateKey = date || new Date().toISOString().split('T')[0]
+  async function _bgSync(dateKey) {
+    // Lazy import untuk hindari circular dependency
+    const { useAuthStore } = await import('@/stores/auth')
+    const auth = useAuthStore()
+    if (!auth.isAuthenticated || auth.isGuest) return
+
+    // Pastikan spreadsheetId tersedia — re-fetch dari GAS jika belum ada
+    const sid = await auth.ensureSpreadsheetId()
+    if (!sid) {
+      console.debug('[prayerStore] spreadsheetId belum tersedia, sync dilewati')
+      return
+    }
+
     const log = logs.value[dateKey]
     if (!log) return
 
-    try {
-      await gasPost('savePrayerLog', {
-        userId,
-        date: dateKey,
-        prayers: log,
-        isUdzur: log.is_udzur,
-      })
-    } catch (err) {
-      console.error('[prayerStore] Sync gagal:', err)
-    }
+    await offlineSave('savePrayerLog', {
+      date: dateKey,
+      prayers: log,
+      isUdzur: !!log.is_udzur,
+      notes: log.notes || '',
+    }, gasPost)
+  }
+
+  /**
+   * Sync manual — bisa dipanggil dari view jika dibutuhkan.
+   * Secara default sync otomatis sudah berjalan via _bgSync.
+   */
+  async function syncToBackend(date) {
+    const dateKey = date || new Date().toISOString().split('T')[0]
+    await _bgSync(dateKey)
   }
 
   /**

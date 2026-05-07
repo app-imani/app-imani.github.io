@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import { useLocalStorage } from '@/composables/useLocalStorage'
 import { useGasApi } from '@/composables/useGasApi'
+import { useOfflineSync } from '@/composables/useOfflineSync'
 import { useCyclePrediction } from '@/composables/useCyclePrediction'
 import { useHijriDate } from '@/composables/useHijriDate'
 
@@ -16,6 +17,7 @@ import { useHijriDate } from '@/composables/useHijriDate'
 export const useCycleStore = defineStore('cycle', () => {
   const { get: lsGet, set: lsSet } = useLocalStorage()
   const { post: gasPost } = useGasApi()
+  const { offlineSave } = useOfflineSync()
   const { predict, daysUntilNextPeriod } = useCyclePrediction()
   const { isRamadhan } = useHijriDate()
 
@@ -238,17 +240,13 @@ export const useCycleStore = defineStore('cycle', () => {
   async function syncToBackend(userId) {
     if (!userId || cycleLogs.value.length === 0) return
     const lastLog = cycleLogs.value[cycleLogs.value.length - 1]
-    try {
-      await gasPost('saveCycleLog', {
-        userId,
-        startDate: lastLog.start_date,
-        endDate: lastLog.end_date,
-        mood: lastLog.mood,
-        symptoms: lastLog.symptoms,
-      })
-    } catch (err) {
-      console.error('[cycleStore] Sync gagal:', err)
-    }
+    await offlineSave('saveCycleLog', {
+      userId,
+      startDate: lastLog.start_date,
+      endDate: lastLog.end_date,
+      mood: lastLog.mood,
+      symptoms: lastLog.symptoms,
+    }, gasPost)
   }
 
   return {

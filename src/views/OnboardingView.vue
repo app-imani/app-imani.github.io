@@ -186,7 +186,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ChevronLeft, MapPin } from 'lucide-vue-next'
 import { useSettingsStore } from '@/stores/settings'
@@ -218,6 +218,14 @@ const form = ref({
   notifPrayer: true,
   notifAmal: true,
   notifFasting: false,
+})
+
+// Pre-fill nama dari displayName Google / akun yang sudah login
+onMounted(() => {
+  const savedName = authStore.user?.displayName || settingsStore.displayName || ''
+  if (savedName && !form.value.name) {
+    form.value.name = savedName
+  }
 })
 
 const canProceed = computed(() => {

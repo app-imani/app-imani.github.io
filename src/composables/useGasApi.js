@@ -48,6 +48,7 @@ export function useGasApi() {
         action,
         ...(auth.userId ? { userId: auth.userId } : {}),
         ...(auth.token ? { token: auth.token } : {}),
+        ...(auth.spreadsheetId ? { spreadsheetId: auth.spreadsheetId } : {}),
         ...params,
       })
 
@@ -91,6 +92,7 @@ export function useGasApi() {
         action,
         ...(auth.userId ? { userId: auth.userId } : {}),
         ...(auth.token ? { token: auth.token } : {}),
+        ...(auth.spreadsheetId ? { spreadsheetId: auth.spreadsheetId } : {}),
         data,
       }
 

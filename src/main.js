@@ -21,6 +21,7 @@ authStore.hydrateFromStorage()
 setAuthProvider(() => ({
   token: authStore.token,
   userId: authStore.userId,
+  spreadsheetId: authStore.spreadsheetId,
 }))
 
 // 4. Mulai watch Firebase auth state (token refresh, logout eksternal, dll.)
