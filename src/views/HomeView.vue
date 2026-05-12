@@ -172,7 +172,7 @@ const hijriDateShort = computed(() => {
 })
 
 const HOUR = todayDate.hour()
-const greeting = HOUR < 11 ? 'Selamat Pagi' : HOUR < 15 ? 'Selamat Siang' : HOUR < 18 ? 'Selamat Sore' : 'Selamat Malam'
+const greeting = HOUR < 11 ? 'Pagi' : HOUR < 15 ? 'Siang' : HOUR < 18 ? 'Sore' : 'Malam'
 
 const todayStr = dayjs().format('YYYY-MM-DD')
 const selesaiDate = ref(todayStr)
