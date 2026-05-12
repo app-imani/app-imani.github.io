@@ -185,7 +185,7 @@
 import { ref, computed, watch, nextTick } from 'vue'
 import { Play, Pause, Music, Loader, SkipBack, SkipForward, Repeat, ChevronDown, ChevronUp, BookOpen } from 'lucide-vue-next'
 
-const BASE_URL = 'https://everyayah.com/data/Alafasy_128kbps'
+const BASE_URL = 'https://everyayah.com/data/Alafasy_64kbps'
 
 const props = defineProps({
   surahNumber: { type: Number, required: true },
