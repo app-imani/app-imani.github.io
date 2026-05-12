@@ -8,6 +8,8 @@
     <ToastNotif />
     <RewardAnimation />
     <AudioPlayer />
+    <PWAUpdateBanner />
+    <PWAInstallBanner />
   </div>
 </template>
 
@@ -17,6 +19,8 @@ import { useCycleStore } from '@/stores/cycle'
 import ToastNotif from '@/components/ui/ToastNotif.vue'
 import RewardAnimation from '@/components/ui/RewardAnimation.vue'
 import AudioPlayer from '@/components/ui/AudioPlayer.vue'
+import PWAInstallBanner from '@/components/ui/PWAInstallBanner.vue'
+import PWAUpdateBanner from '@/components/ui/PWAUpdateBanner.vue'
 import { useOfflineSync } from '@/composables/useOfflineSync'
 import { useGasApi } from '@/composables/useGasApi'
 
