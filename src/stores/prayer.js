@@ -159,6 +159,22 @@ export const usePrayerStore = defineStore('prayer', () => {
   }
 
   /**
+   * Sync semua log N hari terakhir ke backend.
+   * Dipanggil oleh useVersionGuard sebelum clear data saat migrasi versi.
+   */
+  async function syncAllRecent(days = 14) {
+    const today = new Date()
+    const promises = []
+    for (let i = 0; i < days; i++) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const key = d.toISOString().split('T')[0]
+      if (logs.value[key]) promises.push(_bgSync(key).catch(() => {}))
+    }
+    await Promise.allSettled(promises)
+  }
+
+  /**
    * Ambil log dari GAS backend
    */
   async function fetchFromBackend(date, userId) {
@@ -183,6 +199,6 @@ export const usePrayerStore = defineStore('prayer', () => {
     setStatus: (key, status, date = null) => setPrayerStatus(key, status, date),
     getStatus: (date, key) => logs.value[date]?.[key] || null,
     getTodayStatus: (key) => logs.value[new Date().toISOString().split('T')[0]]?.[key] || null,
-    syncToBackend, fetchFromBackend,
+    syncToBackend, fetchFromBackend, syncAllRecent,
   }
 })

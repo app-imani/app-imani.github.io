@@ -375,6 +375,22 @@ export const useAmalStore = defineStore('amal', () => {
 
   async function syncToBackend(date) { await _bgSync(date) }
 
+  /**
+   * Sync semua log N hari terakhir ke backend.
+   * Dipanggil oleh useVersionGuard sebelum clear data saat migrasi versi.
+   */
+  async function syncAllRecent(days = 14) {
+    const today = new Date()
+    const promises = []
+    for (let i = 0; i < days; i++) {
+      const d = new Date(today)
+      d.setDate(d.getDate() - i)
+      const key = d.toISOString().split('T')[0]
+      if (logs.value[key]) promises.push(_bgSync(key).catch(() => {}))
+    }
+    await Promise.allSettled(promises)
+  }
+
   // Auto-expire udzur saat store init
   if (udzurMode.value.active && !isUdzurActive.value) {
     udzurMode.value.active = false
@@ -393,6 +409,6 @@ export const useAmalStore = defineStore('amal', () => {
     toggleSunnah, incrementTilawah, setSunnahConfig,
     saveMuhasabah,
     startWirid, tapWirid, resetWirid,
-    saveToStorage, loadFromStorage, syncToBackend,
+    saveToStorage, loadFromStorage, syncToBackend, syncAllRecent,
   }
 })
