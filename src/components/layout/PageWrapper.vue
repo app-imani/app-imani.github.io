@@ -6,7 +6,7 @@
     </div>
 
     <!-- Konten utama dengan padding untuk bottom nav -->
-    <main class="flex-1 pb-safe overflow-y-auto">
+    <main class="flex-1 overflow-y-auto" :class="hideNav ? 'pb-0' : 'pb-safe'">
       <slot />
     </main>
 

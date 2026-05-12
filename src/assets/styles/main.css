@@ -39,14 +39,23 @@ html {
   font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
+  /* iOS Safari: use fill-available so chrome bar doesn't clip content */
+  height: -webkit-fill-available;
 }
 
 body {
   background-color: var(--color-surface);
   color: var(--color-text);
   overflow-x: hidden;
-  /* Prevent iOS bounce scroll */
+  /* Prevent bounce scroll — supported on modern Android/Desktop; iOS fallback is graceful */
   overscroll-behavior-y: contain;
+}
+
+/* Root app container — iOS viewport fix */
+#app {
+  min-height: 100vh; /* fallback */
+  min-height: -webkit-fill-available; /* iOS 15 and below */
+  min-height: 100dvh; /* modern browsers (iOS 16+, Chrome 108+) */
 }
 
 /* Arabic text */

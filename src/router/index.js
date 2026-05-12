@@ -84,7 +84,7 @@ const routes = [
     path: '/settings',
     name: 'settings',
     component: () => import('@/views/SettingsView.vue'),
-    meta: { requiresAuth: true, title: 'Pengaturan' },
+    meta: { requiresAuth: true, noNav: true, title: 'Pengaturan' },
   },
   {
     path: '/hijri-calendar',

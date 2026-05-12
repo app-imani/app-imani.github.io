@@ -27,17 +27,17 @@
       <p class="text-[10px] text-slate-400 mt-1 text-right">{{ surahProgressPercent }}% surah</p>
     </div>
 
-    <!-- Hidden audio element — src changes per ayah -->
+    <!-- Hidden audio element — src set manually for iOS compatibility -->
     <audio
       ref="audioRef"
-      :src="currentAyahUrl"
       @timeupdate="onTimeUpdate"
       @loadedmetadata="onLoadedMetadata"
       @ended="onAyahEnded"
       @error="onError"
       @waiting="isLoading = true"
       @canplay="isLoading = false"
-      preload="auto"
+      playsinline
+      preload="metadata"
       class="hidden"
     />
 
@@ -182,7 +182,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Play, Pause, Music, Loader, SkipBack, SkipForward, Repeat, ChevronDown, ChevronUp, BookOpen } from 'lucide-vue-next'
 
 const BASE_URL = 'https://everyayah.com/data/Alafasy_64kbps'
@@ -266,11 +266,43 @@ watch(currentAyah, () => {
 watch(() => props.surahNumber, () => { showPreview.value = false })
 // ─────────────────────────────────────────────────────────────
 
-// Build URL for current ayah
-const currentAyahUrl = computed(() => {
-  const s = String(props.surahNumber).padStart(3, '0')
-  const a = String(currentAyah.value).padStart(3, '0')
+// Build URL for any ayah
+function buildAyahUrl(surahNum, ayahNum) {
+  const s = String(surahNum).padStart(3, '0')
+  const a = String(ayahNum).padStart(3, '0')
   return `${BASE_URL}/${s}${a}.mp3`
+}
+
+/**
+ * Load (and optionally play) an ayah.
+ * MUST be called directly from user-gesture handlers or ended/onAyahEnded
+ * so iOS still considers it part of the media session.
+ */
+function loadAyah(ayahNum, autoPlay = false) {
+  if (!audioRef.value) return
+  currentAyah.value = ayahNum
+  currentTime.value = 0
+  duration.value    = 0
+  isError.value     = false
+  isLoading.value   = true
+
+  const url = buildAyahUrl(props.surahNumber, ayahNum)
+  audioRef.value.src  = url
+  audioRef.value.load()
+
+  if (autoPlay) {
+    // iOS: play() called synchronously after .load() while still in event context
+    audioRef.value.play()
+      .then(() => { isPlaying.value = true })
+      .catch(() => { isError.value = true; isLoading.value = false })
+  }
+}
+
+// Set up initial src on mount
+onMounted(() => {
+  if (audioRef.value && props.surahNumber && props.totalAyahs) {
+    audioRef.value.src = buildAyahUrl(props.surahNumber, 1)
+  }
 })
 
 // Overall surah progress (0–100)
@@ -286,6 +318,7 @@ watch(() => [props.surahNumber, props.totalAyahs], stopAndReset)
 function stopAndReset() {
   if (audioRef.value) {
     audioRef.value.pause()
+    audioRef.value.src = buildAyahUrl(props.surahNumber, 1)
     audioRef.value.load()
   }
   isPlaying.value      = false
@@ -324,10 +357,8 @@ function onLoadedMetadata() {
   duration.value  = audioRef.value?.duration || 0
   isLoading.value = false
   isError.value   = false
-  // Auto-continue playback when advancing to next ayah
-  if (isPlaying.value) {
-    audioRef.value.play().catch(() => { isError.value = true })
-  }
+  // Note: auto-play on ayah advance is handled directly in onAyahEnded,
+  // nextAyah, prevAyah — NOT here — so iOS user-gesture context is preserved.
 }
 
 function onAyahEnded() {
@@ -335,7 +366,7 @@ function onAyahEnded() {
   duration.value    = 0
 
   if (repeatMode.value === 'ayah') {
-    // Repeat same ayah
+    // Repeat same ayah — still in ended handler context, iOS allows this
     audioRef.value.currentTime = 0
     audioRef.value.play().catch(() => { isError.value = true })
     return
@@ -344,18 +375,21 @@ function onAyahEnded() {
   completedAyahs.value++
 
   if (currentAyah.value < props.totalAyahs) {
-    // Advance — onLoadedMetadata will auto-play
-    currentAyah.value++
+    // iOS: loadAyah called synchronously inside ended handler — media session still active
+    loadAyah(currentAyah.value + 1, true)
   } else {
     // Surah finished
     if (repeatMode.value === 'surah') {
-      currentAyah.value    = 1
       completedAyahs.value = 0
-      // onLoadedMetadata will auto-play
+      loadAyah(1, true)
     } else {
       isPlaying.value      = false
       currentAyah.value    = 1
       completedAyahs.value = 0
+      if (audioRef.value) {
+        audioRef.value.src = buildAyahUrl(props.surahNumber, 1)
+        audioRef.value.load()
+      }
     }
   }
 }
@@ -363,19 +397,15 @@ function onAyahEnded() {
 function nextAyah() {
   if (currentAyah.value >= props.totalAyahs) return
   completedAyahs.value = Math.max(completedAyahs.value, currentAyah.value - 1)
-  currentAyah.value++
-  currentTime.value = 0
-  duration.value    = 0
-  if (!isPlaying.value) isPlaying.value = true // auto-start when skipping
+  // iOS: user tapped button — direct call, gesture context is active
+  loadAyah(currentAyah.value + 1, true)
 }
 
 function prevAyah() {
   if (currentAyah.value <= 1) return
-  currentAyah.value--
-  completedAyahs.value = Math.max(0, currentAyah.value - 1)
-  currentTime.value = 0
-  duration.value    = 0
-  if (!isPlaying.value) isPlaying.value = true
+  // iOS: user tapped button — direct call, gesture context is active
+  loadAyah(currentAyah.value - 1, true)
+  completedAyahs.value = Math.max(0, currentAyah.value - 2)
 }
 
 function cycleRepeat() {
@@ -390,20 +420,14 @@ function onError() {
 }
 
 function retryLoad() {
-  isError.value = false
-  if (audioRef.value) {
-    audioRef.value.load()
-    if (isPlaying.value) audioRef.value.play().catch(() => { isError.value = true })
-  }
+  loadAyah(currentAyah.value, isPlaying.value)
 }
 
 function jumpToAyah(n) {
   if (n < 1 || n > props.totalAyahs) return
   completedAyahs.value = Math.max(0, n - 1)
-  currentAyah.value    = n
-  currentTime.value    = 0
-  duration.value       = 0
-  if (!isPlaying.value) isPlaying.value = true
+  // iOS: user tapped ayah row — direct call, gesture context is active
+  loadAyah(n, true)
 }
 
 function formatTime(seconds) {
