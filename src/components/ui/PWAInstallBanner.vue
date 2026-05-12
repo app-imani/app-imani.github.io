@@ -1,13 +1,91 @@
 <template>
   <!-- ════════════════════════════════════════════
-       PWA Install Banner — "Tambahkan ke Layar Utama"
-       Muncul sebagai bottom sheet yang bisa di-swipe dismiss
+       PWA Install Banner
+       - Android/Desktop: pakai beforeinstallprompt API
+       - iOS (semua browser): instruksi manual Share → Add to Home Screen
   ════════════════════════════════════════════ -->
 
-  <!-- Overlay backdrop (mobile) -->
+  <!-- ── iOS Install Guide ─────────────────────────────────── -->
+  <Transition name="slide-up">
+    <div
+      v-if="showIos"
+      class="fixed bottom-0 left-0 right-0 z-50 px-4"
+      style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);"
+    >
+      <div class="max-w-md mx-auto rounded-3xl bg-white shadow-2xl shadow-purple-200/60 overflow-hidden">
+        <div class="h-1.5 bg-gradient-to-r from-purple-500 via-pink-500 to-rose-400" />
+
+        <div class="p-5">
+          <!-- Header row -->
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 flex items-center justify-center shadow-md shadow-purple-200 flex-shrink-0 overflow-hidden">
+              <img src="/pwa-192x192.png" alt="Imani" class="w-full h-full object-cover" />
+            </div>
+            <div class="flex-1">
+              <p class="font-bold text-slate-800 text-sm">Tambahkan Imani ke Layar Utama</p>
+              <p class="text-xs text-slate-400 mt-0.5">Akses lebih cepat, bisa dipakai offline</p>
+            </div>
+            <button
+              @click="handleDismissIos"
+              class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 active:bg-slate-200 flex-shrink-0"
+              aria-label="Tutup"
+            >
+              <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+                <path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Step-by-step iOS instruction -->
+          <div class="space-y-2.5 mb-4">
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl px-3 py-2.5">
+              <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center flex-shrink-0">1</span>
+              <p class="text-xs text-slate-600">
+                Ketuk tombol
+                <!-- Share icon inline SVG (matches iOS look) -->
+                <span class="inline-flex items-center gap-1 mx-1 px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-600 font-semibold">
+                  <svg width="11" height="13" viewBox="0 0 11 13" fill="none" class="inline">
+                    <path d="M5.5 8.5V1m0 0L3 3.5M5.5 1L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M1 6.5v5a.5.5 0 00.5.5h8a.5.5 0 00.5-.5v-5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                  Bagikan
+                </span>
+                di toolbar browser
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl px-3 py-2.5">
+              <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center flex-shrink-0">2</span>
+              <p class="text-xs text-slate-600">
+                Gulir ke bawah dan ketuk
+                <strong class="text-slate-800"> "Tambahkan ke Layar Utama"</strong>
+              </p>
+            </div>
+
+            <div class="flex items-center gap-3 bg-slate-50 rounded-2xl px-3 py-2.5">
+              <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-600 text-xs font-bold flex items-center justify-center flex-shrink-0">3</span>
+              <p class="text-xs text-slate-600">Ketuk <strong class="text-slate-800">"Tambahkan"</strong> di pojok kanan atas</p>
+            </div>
+          </div>
+
+          <!-- Arrow indicator pointing to bottom bar -->
+          <div class="flex flex-col items-center gap-1 text-purple-400">
+            <p class="text-[10px] font-medium">Tombol Share ada di bawah ↓</p>
+            <svg width="16" height="10" viewBox="0 0 16 10" fill="none">
+              <path d="M8 9L1 2l14 0L8 9z" fill="currentColor"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Transition>
+
+  <!-- ── Android / Desktop Install Banner ──────────────────── -->
+
+  <!-- Overlay backdrop -->
   <Transition name="backdrop">
     <div
-      v-if="show"
+      v-if="showAndroid"
       class="fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]"
       @click="handleDismiss"
     />
@@ -16,7 +94,7 @@
   <!-- Bottom Sheet -->
   <Transition name="slide-up">
     <div
-      v-if="show"
+      v-if="showAndroid"
       class="fixed bottom-0 left-0 right-0 z-50 px-4 pb-safe"
       style="padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);"
     >
@@ -114,21 +192,25 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { usePWAInstall } from '@/composables/usePWAInstall'
 
-const { canInstall, triggerInstall, dismissInstall } = usePWAInstall()
+const { canInstall, triggerInstall, dismissInstall, canInstallIos, dismissIosInstall } = usePWAInstall()
 
 const iconError = ref(false)
 const installing = ref(false)
 const showDelay = ref(false)
 
-// Tunda tampilan 3 detik setelah mount agar tidak langsung mengganggu
+// Tunda tampilan 4 detik setelah mount
 onMounted(() => {
-  setTimeout(() => { showDelay.value = true }, 3000)
+  setTimeout(() => { showDelay.value = true }, 4000)
 })
 
-const show = computed(() => canInstall.value && showDelay.value)
+// Android/Desktop — pakai beforeinstallprompt
+const showAndroid = computed(() => canInstall.value && showDelay.value)
+
+// iOS — semua browser di iPhone/iPad tidak punya beforeinstallprompt
+const showIos = computed(() => canInstallIos.value && showDelay.value)
 
 const features = [
   { icon: '🌙', label: 'Jadwal\nSholat' },
@@ -144,6 +226,10 @@ async function handleInstall() {
 
 function handleDismiss() {
   dismissInstall()
+}
+
+function handleDismissIos() {
+  dismissIosInstall()
 }
 </script>
 

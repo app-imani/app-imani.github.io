@@ -17,6 +17,21 @@ const deferredPrompt = ref(null)
 const installDismissed = ref(false)
 const isInstalled = ref(false)
 
+// ── iOS detection ──────────────────────────────────────────
+// Semua browser iOS (Chrome, Firefox, Edge, Safari) menggunakan WebKit
+// dan TIDAK mendukung `beforeinstallprompt`. Deteksi dilakukan via UA.
+const _isIos = typeof navigator !== 'undefined'
+  && (/iPad|iPhone|iPod/.test(navigator.userAgent)
+      || (navigator.userAgent.includes('Mac') && 'ontouchend' in document)) // iPad OS 13+
+  && !navigator.userAgent.includes('Windows') // exclude Windows tablet
+
+// Tidak perlu cek isIos — cukup cek: iOS + belum standalone + belum dismiss
+const iosInstallDismissed = ref(
+  typeof localStorage !== 'undefined'
+    ? localStorage.getItem('imani_ios_install_dismissed') === '1'
+    : false
+)
+
 // Cek apakah sudah diinstall (standalone mode)
 if (typeof window !== 'undefined') {
   // Match media untuk standalone (Android/Desktop)
@@ -42,10 +57,22 @@ if (typeof window !== 'undefined') {
 }
 
 export function usePWAInstall() {
-  // ── Install prompt ──
+  // ── Install prompt (Android / Desktop Chrome) ──
   const canInstall = computed(
     () => !!deferredPrompt.value && !installDismissed.value && !isInstalled.value
   )
+
+  // ── iOS manual install guide ──
+  // iOS tidak punya beforeinstallprompt; tampilkan instruksi Share → Add to Home Screen
+  const isIos = _isIos
+  const canInstallIos = computed(
+    () => _isIos && !isInstalled.value && !iosInstallDismissed.value
+  )
+
+  function dismissIosInstall() {
+    iosInstallDismissed.value = true
+    try { localStorage.setItem('imani_ios_install_dismissed', '1') } catch { /* */ }
+  }
 
   async function triggerInstall() {
     if (!deferredPrompt.value) return false
@@ -85,11 +112,15 @@ export function usePWAInstall() {
   }
 
   return {
-    // Install
+    // Install (Android/Desktop)
     canInstall,
     isInstalled,
     triggerInstall,
     dismissInstall,
+    // iOS manual install guide
+    isIos,
+    canInstallIos,
+    dismissIosInstall,
     // SW Update
     needRefresh,
     offlineReady,
