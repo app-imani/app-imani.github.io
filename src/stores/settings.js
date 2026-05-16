@@ -33,6 +33,15 @@ export const useSettingsStore = defineStore('settings', () => {
   const audioPlaybackRate = ref(lsGet('imani_settings_audio_playback_rate', 1.0))
   const audioAutoPlay = ref(lsGet('imani_settings_audio_auto_play', false))
 
+  // IMPR-03: Tema tampilan (light | dark | system)
+  const colorScheme = ref(lsGet('imani_settings_color_scheme', 'light'))
+
+  // IMPR-11: Qari pilihan untuk audio murottal
+  const preferredQari = ref(lsGet('imani_settings_preferred_qari', 'Alafasy_64kbps'))
+
+  // IMPR-02: Tanggal export terakhir
+  const lastExportDate = ref(lsGet('imani_settings_last_export_date', null))
+
   // Flat city/country accessors
   const city = computed({
     get: () => location.value?.city || '',
@@ -63,8 +72,8 @@ export const useSettingsStore = defineStore('settings', () => {
     lsSet('imani_settings_onboarded', value)
   }
 
-  function setLocation(city, latitude, longitude) {
-    const loc = { city, latitude, longitude }
+  function setLocation(city, latitude, longitude, country = 'Indonesia') {
+    const loc = { city, latitude, longitude, country }
     location.value = loc
     lsSet('imani_settings_location', loc)
   }
@@ -93,6 +102,23 @@ export const useSettingsStore = defineStore('settings', () => {
     lsSet('imani_settings_notif_special_moment', notifSpecialMoment.value)
     lsSet('imani_settings_audio_playback_rate', audioPlaybackRate.value)
     lsSet('imani_settings_audio_auto_play', audioAutoPlay.value)
+    lsSet('imani_settings_color_scheme', colorScheme.value)
+    lsSet('imani_settings_preferred_qari', preferredQari.value)
+  }
+
+  function setLastExportDate(date) {
+    lastExportDate.value = date
+    lsSet('imani_settings_last_export_date', date)
+  }
+
+  function setColorScheme(scheme) {
+    colorScheme.value = scheme
+    lsSet('imani_settings_color_scheme', scheme)
+  }
+
+  function setPreferredQari(qari) {
+    preferredQari.value = qari
+    lsSet('imani_settings_preferred_qari', qari)
   }
 
   async function saveUserProfile() {
@@ -113,9 +139,11 @@ export const useSettingsStore = defineStore('settings', () => {
     notifPrayer, notifAmal, notifFasting,
     notifMalamJumat, notifAyyamulBidh, notifSeninaKamis, notifSpecialMoment,
     audioPlaybackRate, audioAutoPlay,
+    colorScheme, preferredQari, lastExportDate,
     city, country, calcMethod,
     prayerReminderMinutes, calculationMethod, madzhab, hasLocation,
     setUser, setOnboarded, setLocation, setNotification, setPrayerReminderMinutes,
+    setLastExportDate, setColorScheme, setPreferredQari,
     save, saveUserProfile,
   }
 })

@@ -118,6 +118,17 @@
 
       <!-- ── MONTHLY SUMMARY ───────────────────────────────── -->
       <div class="mx-4 rounded-3xl bg-white border border-slate-100 overflow-hidden">
+        <!-- IMPR-12 AC-02: Empty state for new users -->
+        <div v-if="Object.keys(prayerStore.logs).length === 0" class="p-6">
+          <EmptyState
+            illustration="🕌"
+            title="Belum ada catatan sholat"
+            description="Catat sholatmu mulai hari ini untuk melihat ringkasan dan streak di sini."
+            cta-label="Catat Sholat Sekarang"
+            @cta-click="selectedDate = today.format('YYYY-MM-DD')"
+          />
+        </div>
+        <template v-else>
         <div class="flex items-center justify-between px-5 pt-4 pb-3 border-b border-slate-50">
           <div>
             <h2 class="text-sm font-bold text-slate-800">Ringkasan {{ calMonthLabel }}</h2>
@@ -147,6 +158,7 @@
           <div class="flex items-center gap-1.5"><div class="text-[10px]">🌸</div><span class="text-[10px] text-slate-400">Haid/Udzur</span></div>
           <div class="flex items-center gap-1.5"><div class="h-3 w-3 rounded-md bg-slate-100 border border-slate-200" /><span class="text-[10px] text-slate-400">Belum</span></div>
         </div>
+        </template>
       </div>
 
     </div>
@@ -170,6 +182,8 @@ import { useCycleStore } from '@/stores/cycle'
 import { useSettingsStore } from '@/stores/settings'
 import { usePrayerTimes } from '@/composables/usePrayerTimes'
 import { useHijriDate } from '@/composables/useHijriDate'
+
+import EmptyState from '@/components/ui/EmptyState.vue'
 
 const prayerStore = usePrayerStore()
 const cycleStore = useCycleStore()

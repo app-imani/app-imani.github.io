@@ -82,6 +82,14 @@
       </button>
 
       <p class="text-slate-500 text-xs mt-6">Ketuk untuk menghitung</p>
+
+      <!-- IMPR-05: tombol mulai ulang eksplisit -->
+      <button
+        @click="amalStore.resetWirid()"
+        class="mt-4 text-xs text-slate-500 active:text-slate-300 underline"
+      >
+        Mulai Ulang
+      </button>
     </div>
 
     <!-- Selesai -->

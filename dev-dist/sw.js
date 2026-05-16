@@ -104,9 +104,9 @@ define(['./workbox-38a7dab7'], (function (workbox) { 'use strict';
     })]
   }), 'GET');
   workbox.registerRoute(/^https:\/\/everyayah\.com\/.*/i, new workbox.CacheFirst({
-    "cacheName": "audio-murottal-cache",
+    "cacheName": "quran-audio-cache",
     plugins: [new workbox.ExpirationPlugin({
-      maxEntries: 50,
+      maxEntries: 6000,
       maxAgeSeconds: 5184000
     }), new workbox.CacheableResponsePlugin({
       statuses: [0, 200]

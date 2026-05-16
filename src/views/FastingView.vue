@@ -111,9 +111,12 @@
       <!-- History -->
       <div class="mx-4 card">
         <h2 class="text-sm font-semibold text-slate-700 mb-3">Riwayat Puasa</h2>
-        <div v-if="fastingStore.logsArray.length === 0" class="text-center text-sm text-slate-400 py-4">
-          Belum ada catatan puasa
-        </div>
+        <EmptyState
+          v-if="fastingStore.logsArray.length === 0"
+          illustration="🌙"
+          title="Belum ada catatan puasa"
+          description="Mulai catat puasa sunnahmu hari ini!"
+        />
         <div v-else class="space-y-2">
           <div
             v-for="log in recentLogs"
@@ -151,6 +154,7 @@ import { RouterLink } from 'vue-router'
 import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import { useFastingStore } from '@/stores/fasting'
 import { useHijriDate } from '@/composables/useHijriDate'

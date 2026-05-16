@@ -114,9 +114,12 @@
       <!-- Riwayat siklus -->
       <div class="mx-4 card">
         <h2 class="text-sm font-semibold text-slate-700 mb-3">Riwayat Haid</h2>
-        <div v-if="!cycleStore.cycles?.length" class="text-center text-sm text-slate-400 py-4">
-          Belum ada riwayat haid
-        </div>
+        <EmptyState
+          v-if="!cycleStore.cycles?.length"
+          illustration="🌸"
+          title="Belum ada riwayat haid"
+          description="Catat siklus haidmu untuk mendapat prediksi akurat."
+        />
         <div v-else class="space-y-2">
           <div
             v-for="c in cycleStore.cycles.slice().reverse().slice(0, 6)"
@@ -182,6 +185,7 @@ import { RouterLink } from 'vue-router'
 import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import MoodPicker from '@/components/cycle/MoodPicker.vue'
 import SymptomChips from '@/components/cycle/SymptomChips.vue'

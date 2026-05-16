@@ -39,6 +39,44 @@ export const migrationState = {
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 
+// ─── MIGRATIONS registry (IMPR-09) ───────────────────────────────────────────
+// Add entries here when a version needs a data transform instead of a full wipe.
+// Key: 'fromVersion→toVersion' (exact semver strings), value: async transform fn.
+// The transform fn receives (localStorage snapshot) and should apply changes directly.
+//
+// Example:
+//   '1.0.0→1.1.0': async () => {
+//     const old = localStorage.getItem('imani_old_key')
+//     if (old) {
+//       localStorage.setItem('imani_new_key', old)
+//       localStorage.removeItem('imani_old_key')
+//     }
+//   },
+export const MIGRATIONS = {
+  // '<fromVersion>→<toVersion>': async () => { /* transform */ },
+}
+
+/** Auto-export JSON fallback before any destructive clear — IMPR-09 */
+function _autoExportFallback() {
+  try {
+    const payload = { exported: new Date().toISOString(), version: 1, data: {} }
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i)
+      if (key && key.startsWith('imani_')) {
+        try { payload.data[key] = JSON.parse(localStorage.getItem(key)) }
+        catch { payload.data[key] = localStorage.getItem(key) }
+      }
+    }
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `imani-pre-update-backup-${new Date().toISOString().slice(0, 10)}.json`
+    a.click()
+    URL.revokeObjectURL(url)
+  } catch { /* ignore — backup is best-effort */ }
+}
+
 /** Hapus semua data lokal (localStorage, IndexedDB, SW caches) */
 async function _clearAll() {
   migrationState.phase.value   = 'clearing'
@@ -185,6 +223,28 @@ export function useVersionGuard() {
 
     migrationState.active.value    = true
     migrationState.newVersion.value = APP_VERSION
+
+    // ── IMPR-09: Coba jalankan registered migration transform dulu ─────────
+    const migrationKey = `${storedVersion}→${APP_VERSION}`
+    const migrationFn = MIGRATIONS[migrationKey]
+    if (migrationFn) {
+      try {
+        migrationState.phase.value    = 'syncing'
+        migrationState.message.value  = 'Memperbarui data...'
+        migrationState.progress.value = 30
+        await migrationFn()
+        localStorage.setItem(VERSION_KEY, APP_VERSION)
+        migrationState.progress.value = 100
+        migrationState.active.value = false
+        console.log(`[VersionGuard] Migrasi ${migrationKey} selesai tanpa wipe.`)
+        return  // Selesai tanpa full clear!
+      } catch (err) {
+        console.warn('[VersionGuard] Migration transform gagal, fallback ke full clear:', err)
+      }
+    }
+
+    // ── Fallback: full clear (dengan auto-export dulu) ─────────────────────
+    _autoExportFallback()
 
     try {
       // Cek apakah user sedang login (bukan guest)

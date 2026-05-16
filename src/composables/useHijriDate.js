@@ -46,14 +46,30 @@ function extractHijriParts(date) {
 }
 
 /**
+ * Hijri date localStorage cache — IMPR-13
+ * Dates never change for a given Gregorian date, so no expiry needed.
+ */
+function _hijriCacheKey(date) {
+  const d = dayjs.isDayjs(date) ? date : dayjs(date)
+  return `imani_hijri_cache_${d.format('YYYY-MM-DD')}`
+}
+
+/**
  * useHijriDate — Konversi dan format tanggal Hijriah
  */
 export function useHijriDate() {
   function toHijri(date = new Date()) {
+    // Try cache first (IMPR-13)
+    try {
+      const cacheKey = _hijriCacheKey(date)
+      const cached = localStorage.getItem(cacheKey)
+      if (cached) return JSON.parse(cached)
+    } catch (_) { /* ignore */ }
+
     const { day, month, year } = extractHijriParts(date)
     const monthIndex = Math.max(0, Math.min(11, month - 1))
 
-    return {
+    const result = {
       year,
       month,
       day,
@@ -63,6 +79,12 @@ export function useHijriDate() {
       formatted: `${day} ${HIJRI_MONTHS_ID[monthIndex]} ${year} H`,
       formattedAr: `${day} ${HIJRI_MONTHS_AR[monthIndex]} ${year} هـ`,
     }
+
+    // Persist to cache (IMPR-13)
+    try {
+      localStorage.setItem(_hijriCacheKey(date), JSON.stringify(result))
+    } catch (_) { /* ignore quota errors */ }
+    return result
   }
 
   /**

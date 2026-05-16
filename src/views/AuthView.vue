@@ -11,6 +11,14 @@
     <!-- Card -->
     <div class="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden">
 
+      <!-- Shimmer progress bar (visible when loading) -->
+      <div class="relative h-1 w-full overflow-hidden" :class="firebaseAuth.loading.value ? 'bg-primary-100' : 'bg-transparent'">
+        <div
+          v-if="firebaseAuth.loading.value"
+          class="absolute inset-y-0 w-1/2 rounded-full bg-gradient-to-r from-transparent via-primary-500 to-transparent shimmer-bar"
+        />
+      </div>
+
       <!-- Tabs -->
       <div class="flex border-b border-slate-100">
         <button
@@ -26,7 +34,22 @@
         </button>
       </div>
 
-      <div class="p-6">
+      <div class="p-6 relative">
+
+        <!-- Loading overlay -->
+        <Transition name="fade-overlay">
+          <div
+            v-if="firebaseAuth.loading.value"
+            class="absolute inset-0 z-10 rounded-b-3xl bg-white/60 backdrop-blur-[2px] flex flex-col items-center justify-center gap-3 pointer-events-none"
+          >
+            <div class="flex gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-primary-500 dot-bounce" style="animation-delay:0ms" />
+              <span class="w-2 h-2 rounded-full bg-primary-400 dot-bounce" style="animation-delay:150ms" />
+              <span class="w-2 h-2 rounded-full bg-primary-300 dot-bounce" style="animation-delay:300ms" />
+            </div>
+            <p class="text-xs font-semibold text-primary-600 tracking-wide">{{ activeTab === 'daftar' ? 'Mendaftarkan akun...' : 'Sedang masuk...' }}</p>
+          </div>
+        </Transition>
 
         <!-- Error banner -->
         <Transition name="shake">
@@ -330,4 +353,26 @@ const GoogleIcon = {
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
 }
+
+/* Shimmer progress bar */
+.shimmer-bar {
+  animation: shimmer-slide 1.2s ease-in-out infinite;
+}
+@keyframes shimmer-slide {
+  0%   { left: -60%; }
+  100% { left: 120%; }
+}
+
+/* Dot bounce loading */
+.dot-bounce {
+  animation: dot-bounce 0.9s ease-in-out infinite;
+}
+@keyframes dot-bounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.5; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* Overlay fade */
+.fade-overlay-enter-active, .fade-overlay-leave-active { transition: opacity 0.2s ease; }
+.fade-overlay-enter-from, .fade-overlay-leave-to { opacity: 0; }
 </style>

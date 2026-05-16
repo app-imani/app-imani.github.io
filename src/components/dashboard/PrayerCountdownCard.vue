@@ -102,7 +102,10 @@ const settingsStore = useSettingsStore()
 const { prayerTimes, isLoading, error, fetchByCoords, fetchByCity, getNextPrayer } = usePrayerTimes()
 
 const isHaidActive = computed(() => cycleStore.isHaidActive)
-const todayDate = computed(() => dayjs().format('ddd, D MMM'))
+const todayDate = computed(() => {
+  if (nextPrayer.value?.isTomorrow) return dayjs().add(1, 'day').format('ddd, D MMM')
+  return dayjs().format('ddd, D MMM')
+})
 
 const nextPrayer = ref(null)
 const secondsLeft = ref(null)
@@ -144,7 +147,7 @@ function updateCountdown() {
   if (!prayerTimes.value) return
   const next = getNextPrayer(prayerTimes.value)
   nextPrayer.value = next
-  secondsLeft.value = next?.secondsLeft || null
+  secondsLeft.value = (next?.secondsLeft != null) ? next.secondsLeft : null
 }
 </script>
 

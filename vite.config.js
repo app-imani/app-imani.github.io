@@ -98,8 +98,8 @@ export default defineConfig({
             urlPattern: /^https:\/\/everyayah\.com\/.*/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'audio-murottal-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 86400 * 60 },
+              cacheName: 'quran-audio-cache',
+              expiration: { maxEntries: 6000, maxAgeSeconds: 86400 * 60 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },

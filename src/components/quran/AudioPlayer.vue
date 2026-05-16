@@ -184,8 +184,11 @@
 <script setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { Play, Pause, Music, Loader, SkipBack, SkipForward, Repeat, ChevronDown, ChevronUp, BookOpen } from 'lucide-vue-next'
+import { useSettingsStore } from '@/stores/settings'
 
-const BASE_URL = 'https://everyayah.com/data/Alafasy_64kbps'
+const settingsStore = useSettingsStore()
+// IMPR-11: Dynamic BASE_URL based on preferredQari setting
+const BASE_URL = computed(() => `https://everyayah.com/data/${settingsStore.preferredQari || 'Alafasy_64kbps'}`)
 
 const props = defineProps({
   surahNumber: { type: Number, required: true },
@@ -270,7 +273,7 @@ watch(() => props.surahNumber, () => { showPreview.value = false })
 function buildAyahUrl(surahNum, ayahNum) {
   const s = String(surahNum).padStart(3, '0')
   const a = String(ayahNum).padStart(3, '0')
-  return `${BASE_URL}/${s}${a}.mp3`
+  return `${BASE_URL.value}/${s}${a}.mp3`
 }
 
 /**

@@ -64,10 +64,12 @@ export function useFirebaseAuth() {
     error.value = null
     try {
       const { auth } = await getFirebaseAuth()
-      const { createUserWithEmailAndPassword, updateProfile } = await import('firebase/auth')
+      const { createUserWithEmailAndPassword, updateProfile, sendEmailVerification } = await import('firebase/auth')
       const result = await createUserWithEmailAndPassword(auth, email, password)
       // Set displayName di Firebase
       await updateProfile(result.user, { displayName })
+      // IMPR-08: Kirim email verifikasi
+      await sendEmailVerification(result.user).catch(() => {})
       const token = await result.user.getIdToken()
       await authStore.initSession(result.user, token, displayName)
       redirectAfterLogin()

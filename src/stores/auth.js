@@ -55,6 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
         photoURL: firebaseUser.photoURL || '',
         onboardingDone: !!data.onboardingDone,
         isNewUser: !!data.isNewUser,
+        emailVerified: firebaseUser.emailVerified ?? true,
       }
     } catch (e) {
       // GAS tidak tersedia (offline/dev) → tetap set user dari Firebase data
@@ -66,6 +67,7 @@ export const useAuthStore = defineStore('auth', () => {
         photoURL: firebaseUser.photoURL || '',
         onboardingDone: false,
         isNewUser: true,
+        emailVerified: firebaseUser.emailVerified ?? true,
       }
     }
 

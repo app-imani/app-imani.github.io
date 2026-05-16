@@ -32,6 +32,50 @@ body.theme-haid {
   --color-surface: #fff1f2;
 }
 
+/* IMPR-03: Dark Mode — override via .dark class pada <html> */
+.dark {
+  --color-primary: #34d399;
+  --color-primary-light: #064e3b;
+  --color-accent: #fbbf24;
+  --color-surface: #0f172a;
+  --color-text: #f1f5f9;
+  --color-text-muted: #94a3b8;
+  --color-border: #1e293b;
+}
+
+.dark body {
+  background-color: #0f172a;
+  color: #f1f5f9;
+}
+
+.dark .card {
+  background-color: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+.dark .bg-white {
+  background-color: #1e293b !important;
+}
+
+.dark .bg-slate-50 {
+  background-color: #0f172a !important;
+}
+
+.dark .border-slate-100 {
+  border-color: #334155 !important;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-800 {
+  color: #e2e8f0 !important;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: #94a3b8 !important;
+}
+
 /* ============================================
    Base Styles
    ============================================ */

@@ -247,8 +247,18 @@
       </div>
 
       <!-- Muhasabah -->
+      <!-- IMPR-12 AC-06: Show EmptyState guidance before 20:00, show form after 20:00 -->
       <div v-if="activeTab === 'muhasabah'" class="pt-2">
-        <MuhasabahSheet />
+        <div v-if="new Date().getHours() < 20 && !amalStore.todayLog?.muhasabah" class="px-4 pt-4">
+          <EmptyState
+            illustration="🌙"
+            title="Muhasabah tersedia setelah Isya"
+            description="Muhasabah (introspeksi harian) dibuka setelah pukul 20.00 agar kamu bisa merenungkan hari dengan tenang."
+            cta-label="Isi Muhasabah Sekarang"
+            @cta-click="null"
+          />
+        </div>
+        <MuhasabahSheet v-else />
       </div>
 
       <!-- Tasbih & Tools -->
@@ -341,8 +351,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { ref, computed, onMounted } from 'vue'
+import { RouterLink, useRoute } from 'vue-router'
 import { ChevronDown, Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
@@ -351,6 +361,7 @@ import UdzurBanner from '@/components/amal/UdzurBanner.vue'
 import AmalUdzur from '@/components/amal/AmalUdzur.vue'
 import SunnahAmalCard from '@/components/amal/SunnahAmalCard.vue'
 import MuhasabahSheet from '@/components/amal/MuhasabahSheet.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import StreakBadge from '@/components/amal/StreakBadge.vue'
 
 import { useAmalStore } from '@/stores/amal'
@@ -392,7 +403,14 @@ const TABS = computed(() => {
   )
   return tabs
 })
+const route = useRoute()
+const VALID_TABS = ['dzikir_pagi', 'dzikir_petang', 'udzur', 'sunnah', 'doa', 'muhasabah', 'tools']
 const activeTab = ref('dzikir_pagi')
+onMounted(() => {
+  if (route.query.tab && VALID_TABS.includes(route.query.tab)) {
+    activeTab.value = route.query.tab
+  }
+})
 
 // Dzikir — BUG-01 FIXED: use d.category
 const dzikirPagi = dzikirData.filter(d => d.category === 'pagi')

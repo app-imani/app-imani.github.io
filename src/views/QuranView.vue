@@ -117,9 +117,12 @@
       <!-- Reading history -->
       <div class="mx-4 card">
         <h2 class="text-sm font-semibold text-slate-700 mb-3">Riwayat Bacaan</h2>
-        <div v-if="!quranStore.logs?.length" class="text-center text-sm text-slate-400 py-4">
-          Belum ada catatan bacaan
-        </div>
+        <EmptyState
+          v-if="!quranStore.logs?.length"
+          illustration="📖"
+          title="Belum ada catatan bacaan"
+          description="Yuk mulai tilawah dan catat progresmu!"
+        />
         <div v-else class="space-y-2">
           <div
             v-for="log in recentLogs"
@@ -195,6 +198,7 @@ import { RouterLink } from 'vue-router'
 import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
+import EmptyState from '@/components/ui/EmptyState.vue'
 import TopBar from '@/components/layout/TopBar.vue'
 import CircularProgress from '@/components/quran/CircularProgress.vue'
 import AudioPlayer from '@/components/quran/AudioPlayer.vue'

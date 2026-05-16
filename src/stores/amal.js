@@ -35,14 +35,22 @@ export const useAmalStore = defineStore('amal', () => {
     al_kahfi: true,
   }))
 
-  // F-05 — Wirid Session
-  const wiridSession = ref({
-    sholatName: null,
-    currentStep: 0,
-    counts: [0, 0, 0],
-    targets: [33, 33, 34],
-    isComplete: false,
-  })
+  // F-05 — Wirid Session (IMPR-05: persisted to localStorage with 2h expiry)
+  const WIRID_SESSION_KEY = 'imani_wirid_session'
+  const WIRID_EXPIRY_MS = 2 * 60 * 60 * 1000 // 2 jam
+
+  function _loadWiridSession() {
+    const stored = lsGet(WIRID_SESSION_KEY, null)
+    if (!stored) return { sholatName: null, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false, startedAt: null }
+    // Cek expiry: jika lebih dari 2 jam sejak terakhir dibuka, reset
+    if (stored.startedAt && (Date.now() - new Date(stored.startedAt).getTime()) > WIRID_EXPIRY_MS) {
+      lsSet(WIRID_SESSION_KEY, null)
+      return { sholatName: null, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false, startedAt: null }
+    }
+    return stored
+  }
+
+  const wiridSession = ref(_loadWiridSession())
 
   // ─── Helpers ──────────────────────────────────────────────
   function getTodayKey() {
@@ -337,7 +345,8 @@ export const useAmalStore = defineStore('amal', () => {
 
   // ─── Actions: F-05 Wirid ──────────────────────────────────
   function startWirid(sholatName) {
-    wiridSession.value = { sholatName, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false }
+    wiridSession.value = { sholatName, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false, startedAt: new Date().toISOString() }
+    lsSet(WIRID_SESSION_KEY, wiridSession.value)
   }
 
   function tapWirid() {
@@ -355,12 +364,76 @@ export const useAmalStore = defineStore('amal', () => {
         logs.value[today].wirid_sholat[s.sholatName] = true
         lsSet('imani_amal_logs', logs.value)
         _bgSync(today)
+        // Selesai → hapus session dari localStorage
+        lsSet(WIRID_SESSION_KEY, null)
       }
     }
+    // Simpan progress terkini ke localStorage
+    if (!s.isComplete) lsSet(WIRID_SESSION_KEY, wiridSession.value)
   }
 
   function resetWirid() {
-    wiridSession.value = { sholatName: null, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false }
+    wiridSession.value = { sholatName: null, currentStep: 0, counts: [0, 0, 0], targets: [33, 33, 34], isComplete: false, startedAt: null }
+    lsSet(WIRID_SESSION_KEY, null)
+  }
+
+  // ─── IMPR-14: Weekly & Monthly Report helpers ────────────
+  /**
+   * Returns 7-day summary for a given week ending on `endDate` (YYYY-MM-DD).
+   * If omitted, defaults to today.
+   */
+  function getWeeklySummary(endDate) {
+    const end = endDate ? new Date(endDate + 'T00:00:00') : new Date()
+    const days = Array.from({ length: 7 }, (_, i) => {
+      const d = new Date(end); d.setDate(d.getDate() - (6 - i))
+      const key = formatDate(d)
+      return { key, date: new Date(d), log: logs.value[key] || null }
+    })
+    const activeDays = days.filter(d => d.log && hasMinAmal(d.log)).length
+    const amalCounts = days.map(d => {
+      if (!d.log) return 0
+      if (d.log.is_udzur) return -1 // udzur marker
+      const sunnah = Object.values(d.log.sunnah || {}).filter(v => v === true || (typeof v === 'number' && v > 0)).length
+      const core = ['dzikir_pagi', 'dzikir_petang', 'al_mulk', 'al_kahfi', 'al_waqiah'].filter(k => d.log[k]).length
+      return sunnah + core
+    })
+    return { days, activeDays, amalCounts, streak: currentStreak.value }
+  }
+
+  /**
+   * Returns per-week summary for a given month (year, month 1-indexed).
+   */
+  function getMonthlyReport(year, month) {
+    const monthStr = `${year}-${String(month).padStart(2, '0')}`
+    const entries = Object.entries(logs.value)
+      .filter(([k]) => k.startsWith(monthStr))
+      .sort(([a], [b]) => a.localeCompare(b))
+
+    const activeDays = entries.filter(([, v]) => hasMinAmal(v)).length
+    const daysInMonth = new Date(year, month, 0).getDate()
+    const dzikirPagiDone = entries.filter(([, v]) => v.dzikir_pagi).length
+    const muhasabahDone = entries.filter(([, v]) => v.muhasabah?.filled).length
+    const totalTasbih = entries.reduce((s, [, v]) => s + Object.values(v.tasbih_counts || {}).reduce((a, b) => a + (b || 0), 0), 0)
+
+    // Per-week breakdown (4 weeks)
+    const weeks = [0, 1, 2, 3].map(w => {
+      const start = w * 7 + 1; const end = Math.min(start + 6, daysInMonth)
+      const weekKeys = entries.filter(([k]) => {
+        const day = parseInt(k.split('-')[2], 10); return day >= start && day <= end
+      })
+      return weekKeys.filter(([, v]) => hasMinAmal(v)).length
+    })
+
+    // Insight generator
+    const insights = []
+    if (activeDays >= 25) insights.push('🏆 Mashaa Allah! Hampir sempurna bulan ini!')
+    else if (activeDays >= 20) insights.push('⭐ Hebat! Lebih dari 2/3 hari aktif beramal.')
+    else if (activeDays >= 14) insights.push('🌱 Setengah bulan sudah aktif. Tingkatkan lagi!')
+    else insights.push('💪 Masih ada ruang untuk berkembang. Bismillah!')
+    if (dzikirPagiDone >= 20) insights.push('🌅 Dzikir pagi konsisten bulan ini!')
+    if (muhasabahDone >= 15) insights.push('🌙 Muhasabah rutin — jiwa yang selalu introspeksi.')
+
+    return { activeDays, daysInMonth, dzikirPagiDone, muhasabahDone, totalTasbih, weeks, insights }
   }
 
   // ─── Storage ──────────────────────────────────────────────
@@ -371,6 +444,8 @@ export const useAmalStore = defineStore('amal', () => {
     tasbihSession.value = lsGet('imani_tasbih_session', { count: 0, target: 33, label: 'Subhanallah' })
     udzurMode.value = lsGet('imani_udzur_mode', { active: false, startDate: null, durationDays: 7 })
     sunnahConfig.value = lsGet('imani_sunnah_config', sunnahConfig.value)
+    // IMPR-05: reload wirid session (dengan expiry check)
+    wiridSession.value = _loadWiridSession()
   }
 
   async function syncToBackend(date) { await _bgSync(date) }
@@ -401,7 +476,7 @@ export const useAmalStore = defineStore('amal', () => {
     logs, tasbihSession, udzurMode, sunnahConfig, wiridSession,
     tasbih: tasbihSession,
     todayLog, todayCompletionCount, isUdzurActive, currentStreak, weeklyReport,
-    hasMinAmal, getMonthHeatmap, getMonthSummary,
+    hasMinAmal, getMonthHeatmap, getMonthSummary, getWeeklySummary, getMonthlyReport,
     toggleAmal, createEmptyLog,
     isDzikirDone, toggleDzikir, resetDzikir,
     setTasbihSession, incrementTasbih, resetTasbih,
