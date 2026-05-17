@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-slate-50">
     <!-- Header -->
     <div class="bg-white border-b border-slate-100 px-4 pt-safe pt-4 pb-4 flex items-center gap-3">
-      <RouterLink to="/amal" class="p-2 rounded-xl text-slate-500 active:bg-slate-100">
-        <ArrowLeft :size="20" />
+      <RouterLink to="/amal" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-100 active:bg-slate-200 transition-colors text-slate-600">
+        <ChevronLeft :size="20" />
       </RouterLink>
       <div class="flex-1">
         <p class="text-base font-bold text-slate-800">Laporan Amalan</p>
@@ -125,7 +125,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { ArrowLeft, Share2, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { Share2, ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useAmalStore } from '@/stores/amal'
 import quotesData from '@/assets/data/islamic_quotes.json'
 

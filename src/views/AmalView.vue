@@ -6,8 +6,16 @@
         <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -translate-y-8 translate-x-8 pointer-events-none" />
         <div class="absolute bottom-0 left-8 w-16 h-16 bg-white/10 rounded-full translate-y-4 pointer-events-none" />
 
-        <div class="relative flex items-center justify-between pb-3">
-          <div>
+        <div class="relative flex items-center gap-3 pb-3">
+          <!-- Back button -->
+          <button
+            @click="router.back()"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 active:bg-white/30 transition-colors"
+            aria-label="Kembali"
+          >
+            <ChevronLeft :size="20" class="text-white" />
+          </button>
+          <div class="flex-1">
             <div class="flex items-center gap-2 mb-0.5">
               <span class="text-lg">🌸</span>
               <p class="text-white font-bold text-lg leading-tight">Amalan Harianku</p>
@@ -352,8 +360,8 @@
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
-import { RouterLink, useRoute } from 'vue-router'
-import { ChevronDown, Settings } from 'lucide-vue-next'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import { ChevronDown, Settings, ChevronLeft } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import DzikirCard from '@/components/amal/DzikirCard.vue'
@@ -365,6 +373,8 @@ import EmptyState from '@/components/ui/EmptyState.vue'
 import StreakBadge from '@/components/amal/StreakBadge.vue'
 
 import { useAmalStore } from '@/stores/amal'
+
+const router = useRouter()
 import dzikirData from '@/assets/data/dzikir.json'
 import doaData from '@/assets/data/doa.json'
 import sunnahAmalData from '@/assets/data/sunnah_amal.json'

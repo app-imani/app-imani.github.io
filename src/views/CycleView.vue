@@ -12,10 +12,14 @@
         <span class="tb-star absolute top-4 left-16 text-white/30 text-[10px] select-none" style="animation-delay:1.1s">✧</span>
 
         <div class="relative flex items-center justify-between pb-3 gap-3">
-          <!-- Left: icon -->
-          <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 tb-bloom">
-            <span class="text-xl leading-none">🌸</span>
-          </div>
+          <!-- Left: back button -->
+          <button
+            @click="router.back()"
+            class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 active:bg-white/30 transition-colors"
+            aria-label="Kembali"
+          >
+            <ChevronLeft :size="20" class="text-white" />
+          </button>
 
           <!-- Center: title block -->
           <div class="flex-1 text-center">
@@ -340,8 +344,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
-import { RouterLink } from 'vue-router'
-import { Settings } from 'lucide-vue-next'
+import { RouterLink, useRouter } from 'vue-router'
+import { Settings, ChevronLeft } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
@@ -350,6 +354,8 @@ import SymptomChips from '@/components/cycle/SymptomChips.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
 
 import { useCycleStore } from '@/stores/cycle'
+
+const router = useRouter()
 
 const cycleStore = useCycleStore()
 

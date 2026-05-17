@@ -30,37 +30,37 @@ const routes = [
     path: '/prayer',
     name: 'prayer',
     component: () => import('@/views/PrayerView.vue'),
-    meta: { requiresAuth: true, title: 'Sholat' },
+    meta: { requiresAuth: true, noNav: true, title: 'Sholat' },
   },
   {
     path: '/fasting',
     name: 'fasting',
     component: () => import('@/views/FastingView.vue'),
-    meta: { requiresAuth: true, title: 'Puasa' },
+    meta: { requiresAuth: true, noNav: true, title: 'Puasa' },
   },
   {
     path: '/quran',
     name: 'quran',
     component: () => import('@/views/QuranView.vue'),
-    meta: { requiresAuth: true, title: 'Al-Qur\'an' },
+    meta: { requiresAuth: true, noNav: true, title: 'Al-Qur\'an' },
   },
   {
     path: '/cycle',
     name: 'cycle',
     component: () => import('@/views/CycleView.vue'),
-    meta: { requiresAuth: true, title: 'Siklus' },
+    meta: { requiresAuth: true, noNav: true, title: 'Siklus' },
   },
   {
     path: '/amal',
     name: 'amal',
     component: () => import('@/views/AmalView.vue'),
-    meta: { requiresAuth: true, title: 'Amalan' },
+    meta: { requiresAuth: true, noNav: true, title: 'Amalan' },
   },
   {
     path: '/tasbih',
     name: 'tasbih',
     component: () => import('@/views/TasbihView.vue'),
-    meta: { requiresAuth: true, title: 'Tasbih' },
+    meta: { requiresAuth: true, noNav: true, title: 'Tasbih' },
   },
   {
     path: '/wirid',
@@ -91,6 +91,38 @@ const routes = [
     name: 'hijri-calendar',
     component: () => import('@/views/HijriCalendarView.vue'),
     meta: { requiresAuth: true, noNav: true, title: 'Kalender Hijriah' },
+  },
+
+  // ─── Ruang Muslimah — Social ───
+  {
+    path: '/jelajahi',
+    name: 'jelajahi',
+    component: () => import('@/views/JelajahiView.vue'),
+    meta: { requiresAuth: true, title: 'Jelajahi' },
+  },
+  {
+    path: '/tracker',
+    name: 'tracker',
+    component: () => import('@/views/TrackerView.vue'),
+    meta: { requiresAuth: true, title: 'Tracker' },
+  },
+  {
+    path: '/profil',
+    name: 'profil',
+    component: () => import('@/views/ProfilView.vue'),
+    meta: { requiresAuth: true, title: 'Profil' },
+  },
+  {
+    path: '/profil/:userId',
+    name: 'profil-user',
+    component: () => import('@/views/ProfilView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Profil' },
+  },
+  {
+    path: '/ruang/:id',
+    name: 'ruang-post',
+    component: () => import('@/views/RuangPostView.vue'),
+    meta: { requiresAuth: true, noNav: true, title: 'Cerita' },
   },
 
   // Catch-all redirect

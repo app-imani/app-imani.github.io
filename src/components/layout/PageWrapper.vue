@@ -11,16 +11,21 @@
     </main>
 
     <!-- Bottom Navigation (sembunyikan di onboarding) -->
-    <BottomNav v-if="!hideNav" />
+    <BottomNav v-if="!hideNav" @open-posting="showPostingModal = true" />
+
+    <!-- Posting FAB Modal -->
+    <PostingFAB v-if="!hideNav" :show="showPostingModal" @close="showPostingModal = false" />
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import BottomNav from './BottomNav.vue'
+import PostingFAB from '@/components/social/PostingFAB.vue'
 
 const route = useRoute()
+const showPostingModal = ref(false)
 
 // Sembunyikan nav di halaman yang memiliki meta noNav
 const hideNav = computed(() => route.meta?.noNav === true)

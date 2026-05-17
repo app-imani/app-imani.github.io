@@ -1,7 +1,7 @@
 <template>
   <PageWrapper>
     <template #topbar>
-      <TopBar title="Sholat" subtitle="Jadwal & Pencatatan">
+      <TopBar title="Sholat" subtitle="Jadwal & Pencatatan" :show-back="true">
         <template #actions>
           <RouterLink to="/settings" class="p-2 rounded-xl active:bg-slate-100 transition-colors" aria-label="Pengaturan">
             <Settings :size="20" class="text-slate-400" />

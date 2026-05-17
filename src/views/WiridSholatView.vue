@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-primary-950 flex flex-col">
     <!-- Header -->
     <div class="flex items-center justify-between px-5 pt-safe pt-4 pb-4">
-      <RouterLink to="/amal" class="p-2 rounded-xl text-slate-400 active:bg-slate-700">
-        <ArrowLeft :size="20" />
+      <RouterLink to="/amal" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-2xl bg-white/10 ring-1 ring-white/20 active:bg-white/20 transition-colors text-white">
+        <ChevronLeft :size="20" />
       </RouterLink>
       <div class="text-center">
         <p class="text-sm font-semibold text-white">Wirid Setelah Sholat</p>
@@ -133,7 +133,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { ArrowLeft, ChevronDown } from 'lucide-vue-next'
+import { ChevronLeft, ChevronDown } from 'lucide-vue-next'
 import { useAmalStore } from '@/stores/amal'
 
 const amalStore = useAmalStore()

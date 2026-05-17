@@ -8,8 +8,8 @@
 
       <!-- Nav row -->
       <div class="flex items-center gap-3 relative">
-        <RouterLink to="/amal" class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center active:bg-white/30">
-          <ArrowLeft :size="18" class="text-white" />
+        <RouterLink to="/amal" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-2xl bg-white/20 ring-1 ring-white/30 active:bg-white/30 transition-colors">
+          <ChevronLeft :size="20" class="text-white" />
         </RouterLink>
         <div class="flex-1">
           <p class="text-base font-bold text-white">Kalender Amalan</p>
@@ -102,7 +102,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { RouterLink } from 'vue-router'
-import { ArrowLeft, ChevronLeft, ChevronRight } from 'lucide-vue-next'
+import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import { useAmalStore } from '@/stores/amal'
 import StreakBadge from '@/components/amal/StreakBadge.vue'
 import AmalHeatmap from '@/components/amal/AmalHeatmap.vue'

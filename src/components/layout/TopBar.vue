@@ -5,10 +5,10 @@
       <button
         v-if="showBack"
         @click="handleBack"
-        class="p-2 -ml-2 rounded-xl active:bg-slate-100 text-slate-600 transition-colors"
+        class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-2xl bg-slate-100 active:bg-slate-200 text-slate-600 transition-colors"
         aria-label="Kembali"
       >
-        <ChevronLeft :size="22" />
+        <ChevronLeft :size="20" />
       </button>
 
       <!-- Logo / Icon (jika beranda) -->

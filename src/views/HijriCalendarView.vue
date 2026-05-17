@@ -4,7 +4,7 @@
     <!-- Top bar -->
     <div class="sticky top-0 z-20 backdrop-blur-md bg-white/80 border-b border-rose-100/60">
       <div class="flex items-center gap-3 px-4 py-3">
-        <button @click="$router.back()" class="p-2 rounded-full bg-rose-50 active:scale-95 transition-all">
+        <button @click="$router.back()" class="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-2xl bg-rose-50 active:bg-rose-100 transition-colors">
           <ChevronLeft :size="20" class="text-rose-500" />
         </button>
         <div class="flex-1 text-center">
