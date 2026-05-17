@@ -214,7 +214,7 @@
           <!-- Symptom chips -->
           <div class="px-4 py-3 border-b border-pink-50">
             <p class="text-xs font-bold uppercase tracking-[0.16em] text-pink-400 mb-3">🩺 Gejala</p>
-            <SymptomChips v-model="todaySymptoms" />
+            <SymptomChips v-model:selected="todaySymptoms" />
           </div>
 
           <!-- Note textarea -->
@@ -338,14 +338,13 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { RouterLink } from 'vue-router'
 import { Settings } from 'lucide-vue-next'
 
 import PageWrapper from '@/components/layout/PageWrapper.vue'
 import EmptyState from '@/components/ui/EmptyState.vue'
-import TopBar from '@/components/layout/TopBar.vue'
 import MoodPicker from '@/components/cycle/MoodPicker.vue'
 import SymptomChips from '@/components/cycle/SymptomChips.vue'
 import ModalBase from '@/components/ui/ModalBase.vue'
@@ -369,6 +368,16 @@ const mulaiDate = ref(todayStr)
 const selesaiDate = ref(todayStr)
 
 const prediction = computed(() => cycleStore.prediction)
+
+// Pre-load today's saved log data on mount
+onMounted(() => {
+  const existingLog = cycleStore.getDailyLog(todayStr)
+  if (existingLog) {
+    todayMood.value = existingLog.mood || ''
+    todaySymptoms.value = existingLog.symptoms || []
+    todayNote.value = existingLog.note || ''
+  }
+})
 
 const cycleStatusLabel = computed(() => {
   if (cycleStore.isHaidActive) return `Hari ke-${cycleStore.currentHaidDay} · Mode Aktif`
